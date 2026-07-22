@@ -5,9 +5,9 @@
 @custom-variant dark (&:is(.dark *));
 
 /*
- * Nivex Control — Fundação visual (LV-01.1B)
+ * Nivex Control — Fundação visual (LV-01.1B.1)
  * Identidade oficial conforme NC-08 / NC-30 (v4.4).
- * Tokens semânticos em oklch, mapeados para utilitários Tailwind.
+ * Cores oficiais em HEX para garantir correspondência exata renderizada.
  */
 
 @theme inline {
@@ -51,38 +51,38 @@
 }
 
 :root {
-  /* Nivex Control — tokens oficiais NC-08 */
-  --background: oklch(0.978 0.005 240);      /* #F7F9FC */
-  --surface: oklch(1 0 0);                    /* #FFFFFF */
-  --foreground: oklch(0.272 0.024 264);       /* #1F2937 */
+  /* Nivex Control — tokens oficiais NC-08 (valores canônicos em HEX) */
+  --background: #f7f9fc;
+  --surface: #ffffff;
+  --foreground: #1f2937;
 
-  --primary: oklch(0.331 0.079 258);          /* #17365D navy */
-  --primary-foreground: oklch(1 0 0);
-  --secondary: oklch(0.502 0.083 210);        /* #0F6B78 teal */
-  --secondary-foreground: oklch(1 0 0);
+  --primary: #17365d;               /* navy */
+  --primary-foreground: #ffffff;
+  --secondary: #0f6b78;             /* teal */
+  --secondary-foreground: #ffffff;
 
-  --success: oklch(0.522 0.145 145);          /* #2E7D32 */
-  --success-foreground: oklch(1 0 0);
-  --warning: oklch(0.582 0.147 63);           /* #B26A00 */
-  --warning-foreground: oklch(1 0 0);
-  --destructive: oklch(0.522 0.198 27);       /* #B3261E */
-  --destructive-foreground: oklch(1 0 0);
-  --info: oklch(0.331 0.079 258);             /* navy para informação */
-  --info-foreground: oklch(1 0 0);
+  --success: #2e7d32;
+  --success-foreground: #ffffff;
+  --warning: #b26a00;
+  --warning-foreground: #ffffff;
+  --destructive: #b3261e;
+  --destructive-foreground: #ffffff;
+  --info: #0f6b78;                  /* informação usa teal oficial */
+  --info-foreground: #ffffff;
 
-  --card: oklch(1 0 0);
-  --card-foreground: var(--foreground);
-  --popover: oklch(1 0 0);
-  --popover-foreground: var(--foreground);
+  --card: #ffffff;
+  --card-foreground: #1f2937;
+  --popover: #ffffff;
+  --popover-foreground: #1f2937;
 
-  --muted: oklch(0.968 0.007 247);
-  --muted-foreground: oklch(0.45 0.02 260);
-  --accent: oklch(0.502 0.083 210);
-  --accent-foreground: oklch(1 0 0);
+  --muted: #f7f9fc;
+  --muted-foreground: #4b5563;
+  --accent: #0f6b78;
+  --accent-foreground: #ffffff;
 
-  --border: oklch(0.885 0.014 250);           /* #D0D7E2 */
-  --input: oklch(0.885 0.014 250);
-  --ring: oklch(0.502 0.083 210);             /* teal foco */
+  --border: #d0d7e2;
+  --input: #d0d7e2;
+  --ring: #0f6b78;                  /* foco visível teal */
 
   --radius: 8px;
 }
@@ -104,8 +104,8 @@
     -moz-osx-font-smoothing: grayscale;
   }
 
-  :focus-visible {
-    outline: 3px solid var(--color-ring);
+  *:focus-visible {
+    outline: 3px solid #0f6b78;
     outline-offset: 2px;
     border-radius: 4px;
   }
