@@ -78,8 +78,6 @@
   --success: #2e7d32;
   --success-foreground: #ffffff;
   --warning: #b26a00;
-  /* Texto sobre âmbar usa o foreground oficial (#1f2937) para garantir AA em texto normal. */
-  --warning-foreground: #1f2937;
   --destructive: #b3261e;
   --destructive-foreground: #ffffff;
   --info: #0f6b78;                  /* informação usa teal oficial */
