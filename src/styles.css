@@ -104,8 +104,8 @@
     -moz-osx-font-smoothing: grayscale;
   }
 
-  :focus-visible {
-    outline: 3px solid var(--color-ring);
+  *:focus-visible {
+    outline: 3px solid #0f6b78;
     outline-offset: 2px;
     border-radius: 4px;
   }
