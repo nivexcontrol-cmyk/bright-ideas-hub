@@ -166,13 +166,23 @@ function Index() {
             <label htmlFor="exemplo" className="block text-sm font-medium text-foreground">
               Identificador da unidade
             </label>
-            <input
-              id="exemplo"
-              name="exemplo"
-              type="text"
-              placeholder="Ex.: Loja 001"
-              className="mt-1.5 block h-12 w-full rounded-[8px] border border-input bg-surface px-3 text-sm text-foreground placeholder:text-muted-foreground sm:h-10"
-            />
+            {/*
+              Wrapper com altura mínima de 44 px no desktop garante área
+              interativa real (clique no wrapper é delegado ao input via htmlFor),
+              sem alterar a aparência visual do campo (h-10 no desktop, h-12 no celular).
+            */}
+            <label
+              htmlFor="exemplo"
+              className="mt-1.5 flex w-full items-center sm:min-h-[44px]"
+            >
+              <input
+                id="exemplo"
+                name="exemplo"
+                type="text"
+                placeholder="Ex.: Loja 001"
+                className="block h-12 w-full rounded-[8px] border border-input bg-surface px-3 text-sm text-foreground placeholder:text-muted-foreground sm:h-10"
+              />
+            </label>
             <p className="mt-1.5 text-xs text-foreground">
               O rótulo permanece visível acima do campo.
             </p>
