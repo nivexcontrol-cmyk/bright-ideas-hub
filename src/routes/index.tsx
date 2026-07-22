@@ -13,19 +13,23 @@ export const Route = createFileRoute("/")({
       { property: "og:title", content: "Nivex Control — Fundação visual" },
       {
         property: "og:description",
-        content: "Nivex Control — sistema de controle operacional. Vitrine inicial da identidade visual.",
+        content:
+          "Nivex Control — sistema de controle operacional. Vitrine inicial da identidade visual.",
       },
     ],
   }),
   component: Index,
 });
 
-// Controle interativo: 48 px de altura no celular, 40 px no desktop,
-// área mínima de toque garantida por min-w 44 e padding vertical.
+// Controle interativo: altura visual de 48 px no celular e 40 px no desktop.
+// A área interativa real mínima de 44 × 44 px é garantida por um ::before
+// transparente sobreposto (sem alterar a aparência do controle).
 const controlBase =
-  "inline-flex items-center justify-center rounded-[8px] px-4 " +
-  "h-12 sm:h-10 min-w-[44px] py-[2px] " +
-  "text-sm font-medium transition-colors";
+  "relative inline-flex items-center justify-center rounded-[8px] px-4 " +
+  "h-12 sm:h-10 min-w-[44px] " +
+  "text-sm font-medium transition-colors " +
+  "before:absolute before:left-0 before:right-0 before:top-1/2 " +
+  "before:h-11 before:min-h-[44px] before:-translate-y-1/2 before:content-['']";
 
 function Index() {
   return (
@@ -162,13 +166,20 @@ function Index() {
             <label htmlFor="exemplo" className="block text-sm font-medium text-foreground">
               Identificador da unidade
             </label>
-            <input
-              id="exemplo"
-              name="exemplo"
-              type="text"
-              placeholder="Ex.: Loja 001"
-              className="mt-1.5 block h-12 w-full rounded-[8px] border border-input bg-surface px-3 text-sm text-foreground placeholder:text-muted-foreground sm:h-10"
-            />
+            {/*
+              Wrapper com altura mínima de 44 px no desktop garante área
+              interativa real (clique no wrapper é delegado ao input via htmlFor),
+              sem alterar a aparência visual do campo (h-10 no desktop, h-12 no celular).
+            */}
+            <label htmlFor="exemplo" className="mt-1.5 flex w-full items-center sm:min-h-[44px]">
+              <input
+                id="exemplo"
+                name="exemplo"
+                type="text"
+                placeholder="Ex.: Loja 001"
+                className="block h-12 w-full rounded-[8px] border border-input bg-surface px-3 text-sm text-foreground placeholder:text-muted-foreground sm:h-10"
+              />
+            </label>
             <p className="mt-1.5 text-xs text-foreground">
               O rótulo permanece visível acima do campo.
             </p>
