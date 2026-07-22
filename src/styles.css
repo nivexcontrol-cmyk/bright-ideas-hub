@@ -12,9 +12,23 @@
  */
 
 @theme inline {
+  /* Raios oficiais NC-08: 8 px (controles), 12 px (cards/superfícies),
+     999 px (badges pílula). Os apelidos padrão do Tailwind v4 são todos
+     remapeados aos valores oficiais para eliminar qualquer geometria
+     paralela (4, 6 ou 16 px) que apareceria via rounded-sm / rounded-md /
+     rounded-2xl em componentes existentes. */
   --radius-control: 8px;
   --radius-card: 12px;
   --radius-badge: 999px;
+
+  --radius-xs: 8px;
+  --radius-sm: 8px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 12px;
+  --radius-2xl: 12px;
+  --radius-3xl: 12px;
+  --radius-full: 999px;
 
   --font-sans:
     "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
