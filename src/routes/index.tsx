@@ -13,7 +13,7 @@ export const Route = createFileRoute("/")({
       { property: "og:title", content: "Nivex Control — Fundação visual" },
       {
         property: "og:description",
-        content: "Vitrine inicial da identidade visual do Nivex Control conforme NC-08 e NC-30.",
+        content: "Nivex Control — sistema de controle operacional. Vitrine inicial da identidade visual.",
       },
     ],
   }),

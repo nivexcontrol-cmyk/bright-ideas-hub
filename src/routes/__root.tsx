@@ -77,21 +77,25 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Nivex Control" },
+      { title: "Nivex Control — Fundação visual" },
       {
         name: "description",
         content:
-          "Nivex Control — sistema de controle operacional para gestão integrada de reposição, estoque e operações de loja.",
+          "Nivex Control — sistema de controle operacional. Vitrine inicial da identidade visual.",
       },
-      { property: "og:title", content: "Nivex Control" },
+      { property: "og:title", content: "Nivex Control — Fundação visual" },
       {
         property: "og:description",
         content:
-          "Sistema de controle operacional para gestão integrada de reposição, estoque e operações de loja.",
+          "Nivex Control — sistema de controle operacional. Vitrine inicial da identidade visual.",
       },
       { property: "og:type", content: "website" },
       { property: "og:site_name", content: "Nivex Control" },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "Nivex Control — Fundação visual" },
+      { name: "twitter:description", content: "Nivex Control — sistema de controle operacional. Vitrine inicial da identidade visual." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/0ccd5993-991f-4b52-9055-d25c1b767489/id-preview-9ac34f96--0efa4fc6-bc91-48d0-8484-b9a162e0e20e.lovable.app-1784760364849.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/0ccd5993-991f-4b52-9055-d25c1b767489/id-preview-9ac34f96--0efa4fc6-bc91-48d0-8484-b9a162e0e20e.lovable.app-1784760364849.png" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
