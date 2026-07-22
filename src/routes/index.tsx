@@ -21,12 +21,15 @@ export const Route = createFileRoute("/")({
   component: Index,
 });
 
-// Controle interativo: 48 px de altura no celular, 40 px no desktop,
-// área mínima de toque garantida por min-w 44 e padding vertical.
+// Controle interativo: altura visual de 48 px no celular e 40 px no desktop.
+// A área interativa real mínima de 44 × 44 px é garantida por um ::before
+// transparente sobreposto (sem alterar a aparência do controle).
 const controlBase =
-  "inline-flex items-center justify-center rounded-[8px] px-4 " +
-  "h-12 sm:h-10 min-w-[44px] py-[2px] " +
-  "text-sm font-medium transition-colors";
+  "relative inline-flex items-center justify-center rounded-[8px] px-4 " +
+  "h-12 sm:h-10 min-w-[44px] " +
+  "text-sm font-medium transition-colors " +
+  "before:absolute before:left-0 before:right-0 before:top-1/2 " +
+  "before:h-11 before:min-h-[44px] before:-translate-y-1/2 before:content-['']";
 
 function Index() {
   return (
