@@ -121,7 +121,6 @@
   *:focus-visible {
     outline: 3px solid #0f6b78;
     outline-offset: 2px;
-    border-radius: 4px;
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -136,19 +135,4 @@
   }
 }
 
-/* Quantum Lovable - watermark removal */
-#lovable-badge {
-  display: none !important;
-}
-a[href*="lovable.dev"],
-iframe[src*="lovable.dev"],
-div[style*="Edit with Lovable"],
-.lovable-badge {
-  display: none !important;
-  opacity: 0 !important;
-  visibility: hidden !important;
-  pointer-events: none !important;
-  position: absolute !important;
-  z-index: -9999 !important;
-}
 
