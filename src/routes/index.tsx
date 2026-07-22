@@ -13,8 +13,7 @@ export const Route = createFileRoute("/")({
       { property: "og:title", content: "Nivex Control — Fundação visual" },
       {
         property: "og:description",
-        content:
-          "Vitrine inicial da identidade visual do Nivex Control conforme NC-08 e NC-30.",
+        content: "Vitrine inicial da identidade visual do Nivex Control conforme NC-08 e NC-30.",
       },
     ],
   }),
@@ -41,8 +40,8 @@ function Index() {
             Nivex Control
           </h1>
           <p className="mt-3 max-w-2xl text-sm text-foreground sm:text-base">
-            Esta tela apresenta a identidade visual inicial do Nivex Control,
-            seguindo as diretrizes oficiais NC-08 e NC-30 da documentação v4.4.
+            Esta tela apresenta a identidade visual inicial do Nivex Control, seguindo as diretrizes
+            oficiais NC-08 e NC-30 da documentação v4.4.
           </p>
         </header>
 
@@ -61,8 +60,8 @@ function Index() {
             Exemplo de título
           </h3>
           <p className="mt-2 text-base text-foreground">
-            Exemplo de texto normal utilizado em parágrafos, descrições e
-            conteúdos comuns do sistema.
+            Exemplo de texto normal utilizado em parágrafos, descrições e conteúdos comuns do
+            sistema.
           </p>
           <span className="mt-3 inline-block text-xs font-medium uppercase tracking-wider text-secondary">
             Exemplo de rótulo
@@ -109,22 +108,14 @@ function Index() {
           </h2>
           <ul className="mt-4 grid gap-3 sm:grid-cols-2">
             <li className="flex items-start gap-3 rounded-[8px] border border-border bg-background p-3">
-              <CheckCircle2
-                aria-hidden="true"
-                className="mt-0.5 h-5 w-5 shrink-0 text-success"
-              />
+              <CheckCircle2 aria-hidden="true" className="mt-0.5 h-5 w-5 shrink-0 text-success" />
               <div>
                 <p className="text-sm font-semibold text-success">Sucesso</p>
-                <p className="text-sm text-foreground">
-                  Operação concluída sem erros.
-                </p>
+                <p className="text-sm text-foreground">Operação concluída sem erros.</p>
               </div>
             </li>
             <li className="flex items-start gap-3 rounded-[8px] border border-border bg-background p-3">
-              <AlertTriangle
-                aria-hidden="true"
-                className="mt-0.5 h-5 w-5 shrink-0 text-warning"
-              />
+              <AlertTriangle aria-hidden="true" className="mt-0.5 h-5 w-5 shrink-0 text-warning" />
               <div>
                 <p className="text-sm font-semibold text-foreground">
                   <span aria-hidden="true" className="mr-1">
@@ -132,30 +123,20 @@ function Index() {
                   </span>
                   Atenção
                 </p>
-                <p className="text-sm text-foreground">
-                  Verifique os dados antes de prosseguir.
-                </p>
+                <p className="text-sm text-foreground">Verifique os dados antes de prosseguir.</p>
               </div>
             </li>
             <li className="flex items-start gap-3 rounded-[8px] border border-border bg-background p-3">
-              <XCircle
-                aria-hidden="true"
-                className="mt-0.5 h-5 w-5 shrink-0 text-destructive"
-              />
+              <XCircle aria-hidden="true" className="mt-0.5 h-5 w-5 shrink-0 text-destructive" />
               <div>
-                <p className="text-sm font-semibold text-destructive">
-                  Erro ou bloqueio
-                </p>
+                <p className="text-sm font-semibold text-destructive">Erro ou bloqueio</p>
                 <p className="text-sm text-foreground">
                   Não foi possível concluir a ação solicitada.
                 </p>
               </div>
             </li>
             <li className="flex items-start gap-3 rounded-[8px] border border-border bg-background p-3">
-              <Info
-                aria-hidden="true"
-                className="mt-0.5 h-5 w-5 shrink-0 text-info"
-              />
+              <Info aria-hidden="true" className="mt-0.5 h-5 w-5 shrink-0 text-info" />
               <div>
                 <p className="text-sm font-semibold text-info">Informação</p>
                 <p className="text-sm text-foreground">
@@ -178,10 +159,7 @@ function Index() {
             Campo de exemplo
           </h2>
           <div className="mt-4 max-w-md">
-            <label
-              htmlFor="exemplo"
-              className="block text-sm font-medium text-foreground"
-            >
+            <label htmlFor="exemplo" className="block text-sm font-medium text-foreground">
               Identificador da unidade
             </label>
             <input
@@ -208,12 +186,10 @@ function Index() {
           >
             Card
           </h2>
-          <h3 className="mt-3 text-lg font-semibold text-primary">
-            Superfície oficial
-          </h3>
+          <h3 className="mt-3 text-lg font-semibold text-primary">Superfície oficial</h3>
           <p className="mt-1.5 text-sm text-foreground">
-            Card utilizando raio de 12 px, borda oficial e superfície branca,
-            conforme geometria definida em NC-08.
+            Card utilizando raio de 12 px, borda oficial e superfície branca, conforme geometria
+            definida em NC-08.
           </p>
         </section>
 
