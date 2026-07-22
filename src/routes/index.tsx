@@ -171,10 +171,7 @@ function Index() {
               interativa real (clique no wrapper é delegado ao input via htmlFor),
               sem alterar a aparência visual do campo (h-10 no desktop, h-12 no celular).
             */}
-            <label
-              htmlFor="exemplo"
-              className="mt-1.5 flex w-full items-center sm:min-h-[44px]"
-            >
+            <label htmlFor="exemplo" className="mt-1.5 flex w-full items-center sm:min-h-[44px]">
               <input
                 id="exemplo"
                 name="exemplo"
