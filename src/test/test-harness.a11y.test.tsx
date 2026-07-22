@@ -13,6 +13,6 @@ describe("LV-01.2B.1 — teste de acessibilidade (Node 22, provisório)", () => 
     );
 
     const results = await axe(container);
-    expect(results).toHaveNoViolations();
+    expect(results.violations).toEqual([]);
   });
 });
