@@ -1,6 +1,6 @@
 import { defineConfig, devices } from "@playwright/test";
 
-const PORT = 4173;
+const PORT = 4321;
 const BASE_URL = `http://127.0.0.1:${PORT}`;
 
 export default defineConfig({
@@ -21,9 +21,11 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: `npx vite preview --port ${PORT} --strictPort`,
+    command: `npx vite dev --port ${PORT} --strictPort`,
     url: BASE_URL,
     reuseExistingServer: !process.env.CI,
-    timeout: 120_000,
+    timeout: 180_000,
+    stdout: "ignore",
+    stderr: "pipe",
   },
 });
