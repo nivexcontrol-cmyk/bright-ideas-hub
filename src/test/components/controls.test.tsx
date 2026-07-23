@@ -1,5 +1,5 @@
 import * as React from "react";
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect, vi, beforeAll } from "vitest";
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { axe } from "jest-axe";
@@ -21,6 +21,18 @@ import {
  * LV-01.2B.2 — Testes comportamentais dos controles reutilizáveis.
  * Cada teste falha se o comportamento correspondente for removido.
  */
+
+// jsdom não implementa scrollIntoView / hasPointerCapture / releasePointerCapture,
+// usados internamente por primitivos Radix.
+beforeAll(() => {
+  if (!Element.prototype.scrollIntoView) {
+    Element.prototype.scrollIntoView = vi.fn();
+  }
+  // @ts-expect-error — jsdom shim
+  Element.prototype.hasPointerCapture ??= () => false;
+  // @ts-expect-error — jsdom shim
+  Element.prototype.releasePointerCapture ??= () => {};
+});
 
 describe("Button", () => {
   it("dispara onClick por clique, Enter e Espaço", async () => {
