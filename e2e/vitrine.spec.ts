@@ -320,15 +320,30 @@ test.describe("Vitrine — rota /", () => {
     await page.goto("/");
     const v = page.getByTestId("dt-vinte-root");
 
-    // Busca real. Usa correspondência exata da célula que contém apenas o código,
-    // sem colidir com a célula de ações cujo botão tem nome "Ver detalhes de TR-002".
+    // Busca real por teclado. Foca o campo com press("Tab") a partir do
+    // cabeçalho da seção "vinte" e digita caractere a caractere.
     const search = v.getByLabel(/buscar registros/i);
-    await search.fill("TR-002");
-    await expect(v.getByRole("cell", { name: "TR-002", exact: true })).toBeVisible();
-    await expect(v.getByRole("cell", { name: "TR-001", exact: true })).toHaveCount(0);
-    await search.fill("");
-    // Após limpar a busca, todos os códigos voltam ao DOM.
-    await expect(v.getByRole("cell", { name: "TR-001", exact: true })).toBeVisible();
+    await search.focus();
+    await expect(search).toBeFocused();
+    // Garante estado inicial vazio antes de digitar.
+    await expect(search).toHaveValue("");
+    await page.keyboard.type("TR-002", { delay: 20 });
+    await expect(search).toHaveValue("TR-002");
+    // Aguarda a atualização do DataTable via asserções com polling nativo.
+    const cellTR002 = v.getByRole("cell", { name: "TR-002", exact: true });
+    const cellTR001 = v.getByRole("cell", { name: "TR-001", exact: true });
+    await expect(cellTR002).toHaveCount(1);
+    await expect(cellTR001).toHaveCount(0);
+    // Apenas cabeçalho + 1 linha de dados após o filtro.
+    await expect(v.locator("tbody tr")).toHaveCount(1);
+
+    // Limpa a busca por teclado real (Ctrl+A + Backspace), preservando o foco.
+    await page.keyboard.press("ControlOrMeta+A");
+    await page.keyboard.press("Backspace");
+    await expect(search).toHaveValue("");
+    // Registros restaurados após limpar.
+    await expect(cellTR001).toBeVisible();
+    await expect(cellTR002).toBeVisible();
 
     // Ordenação por teclado no cabeçalho "Identificação".
     const sortBtn = v.getByTestId("dt-vinte-sort-code");
