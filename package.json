@@ -16,8 +16,8 @@
     "lint": "eslint .",
     "format": "prettier --write .",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run --dir src/test --exclude '**/*.a11y.test.tsx'",
-    "test:watch": "vitest --dir src/test --exclude '**/*.a11y.test.tsx'",
+    "test": "vitest run --exclude '**/*.a11y.test.tsx'",
+    "test:watch": "vitest --exclude '**/*.a11y.test.tsx'",
     "test:a11y": "vitest run 'src/test/**/*.a11y.test.tsx'",
     "e2e": "playwright test"
   },
