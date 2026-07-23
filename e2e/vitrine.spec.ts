@@ -108,8 +108,8 @@ test.describe("Vitrine — rota /", () => {
   });
 
   for (const vp of [MOBILE, TABLET, DESKTOP]) {
-
     const min = vp.width <= 360 ? 48 : 44;
+
     test(`controles, checkbox+rótulo e rádios+rótulo atingem ${min} px em ${vp.width}px`, async ({
       page,
     }) => {
