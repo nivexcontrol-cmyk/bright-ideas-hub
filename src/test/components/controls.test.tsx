@@ -113,7 +113,7 @@ describe("Select", () => {
     trigger.focus();
     await user.keyboard("{Enter}");
     // navegação por teclado até a segunda opção e confirmação
-    await user.keyboard("{ArrowDown}{ArrowDown}{Enter}");
+    await user.keyboard("{ArrowDown}{Enter}");
 
     expect(onChange).toHaveBeenCalledWith("b");
   });
