@@ -28,10 +28,9 @@ beforeAll(() => {
   if (!Element.prototype.scrollIntoView) {
     Element.prototype.scrollIntoView = vi.fn();
   }
-  // @ts-expect-error — jsdom shim
-  Element.prototype.hasPointerCapture ??= () => false;
-  // @ts-expect-error — jsdom shim
-  Element.prototype.releasePointerCapture ??= () => {};
+  const proto = Element.prototype as unknown as Record<string, unknown>;
+  proto.hasPointerCapture ??= () => false;
+  proto.releasePointerCapture ??= () => {};
 });
 
 describe("Button", () => {
