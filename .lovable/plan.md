@@ -75,14 +75,17 @@ Critérios de aceite:
 - Confirmar seleção em `/entrar` grava cenário + loja no Context e navega para `/app/inicio` (nunca antes).
 - `/app/*` sem sessão redireciona para `/entrar` via componente de `src/routes/app.tsx` (sem `beforeLoad` lendo Context; sem flash do shell).
 - `/entrar` com sessão ativa redireciona para `/app/inicio`.
-- `/app/inicio` mostra o Bloco 1 (boas-vindas contextual com cenário + loja ativos). O Bloco 2 "Acessos disponíveis" não é renderizado enquanto `/app/inicio` for o único destino existente — sem `EmptyState`, sem mensagem substituta.
+- `/app/inicio` renderiza:
+  - Bloco 1: boas-vindas contextual com cenário + loja ativos.
+  - Bloco 2 "Acessos disponíveis": **não renderizado** enquanto `/app/inicio` for o único destino existente — sem `EmptyState`, sem mensagem substituta.
+  - Bloco 3 "Como utilizar a demonstração": texto curto explicando que os dados são fictícios e não persistidos (conforme Decisão 5 aprovada).
 - Recarregar `/app/*` apaga a sessão (sem persistência) e cai em `/entrar`.
 - Menu ainda não existe nesta microetapa (fica em LV-03); a navegação de LV-02.1 se dá por: cards em `/entrar` → botão confirmar → `/app/inicio`.
 
 Testes:
-- Vitest: reducer/helpers do Context (definir cenário, definir loja, limpar sessão).
+- Vitest: testes do Context, do hook `useMockSession()` e das ações implementadas com `useState`/`useMemo` (definir cenário, definir loja, limpar sessão). Nenhum reducer foi aprovado — não testar reducer.
 - E2E Playwright (keyboard-only): fluxo `/entrar` → seleção cenário → seleção loja → confirmar → `/app/inicio` → recarregar → volta para `/entrar`.
-- Axe: `/entrar` e `/app/inicio` sem violações críticas.
+- Axe: `/entrar` e `/app/inicio` com **zero violações** (não apenas ausência de violações críticas). Este critério vale para todos os testes Axe deste plano.
 - Build oficial (Node 24, npm 11.18.0) regenera `src/routeTree.gen.ts` de forma estável.
 
 Auditoria antes da próxima microetapa: parar, apresentar diffs e resultados; nenhuma etapa posterior começa sem aprovação.
@@ -106,10 +109,10 @@ Auditoria antes da próxima microetapa.
 Objetivo do bloco: implementar o shell `/app` completo conforme Decisão 4 de LV-01.3A.4, mais `/app/perfil`, `/app/loja` e a ação "sair".
 
 ### LV-03.1 — Cabeçalho e chips do shell
-Objetivo único: cabeçalho com marca "Nivex Control", chip do cenário ativo, chip da loja ativa e slot da ação "sair" (ainda inerte).
+Objetivo único: cabeçalho com marca "Nivex Control", chip do cenário ativo e chip da loja ativa. **Nenhum item "Sair" visível é introduzido nesta microetapa** — nem inerte, nem placeholder. A ação "Sair" só aparece em LV-03.6, quando estiver totalmente funcional.
 Arquivos permitidos: `src/routes/app.tsx`, componentes de cabeçalho do shell.
 Critérios: chips atualizam ao trocar sessão; WCAG AA; sem alterar `/entrar` ou `/app/inicio`.
-Testes: unit dos componentes de cabeçalho; E2E verifica chips.
+Testes: unit dos componentes de cabeçalho; E2E verifica chips; Axe com zero violações.
 Auditoria antes da próxima microetapa.
 
 ### LV-03.2 — Sidebar desktop/tablet
@@ -160,16 +163,16 @@ Auditoria antes da próxima microetapa.
 Cada bloco será desdobrado em microetapas pequenas no momento de sua abertura, cada uma com: objetivo único, arquivos permitidos, critérios de aceite, testes e auditoria antes da próxima etapa. Regras invioláveis da Seção 1 permanecem válidas em todos.
 
 ### LV-04 — Catálogo visual
-Componentes compartilhados adicionais que os blocos operacionais consumirão (ex.: cabeçalhos de página, filtros padrão, estados vazios, badges de status específicos), sem criar rotas operacionais.
+LV-04 **não pode ser reduzida a componentes sem rotas**. O bloco começará com uma **microetapa decisória própria** para conciliar o catálogo visual com a rota aprovada `/app/rede/produtos` e suas sub-rotas ainda pendentes. Componentes compartilhados adicionais (cabeçalhos de página, filtros padrão, estados vazios, badges de status específicos) serão desdobrados a partir dessa decisão inicial. Não pular LV-04.
 
 ### LV-05 — Recebimento visual
 Rotas: `/app/recebimento`, `/app/recebimento/$recebimentoId` (layout-pai com `<Outlet />` + `.index.tsx` de detalhe), `/app/recebimento/$recebimentoId/conferencia`, `/app/recebimento/$recebimentoId/divergencias`. Todas puramente visuais e mockadas.
 
 ### LV-06 — Estoque e reposição visual
-Rotas: `/app/loja/estoque` (consulta visual mockada de `stock_balances`), `/app/reposicao`, `/app/reposicao/$reposicaoId` (layout-pai + `.index.tsx`), `/app/reposicao/$reposicaoId/execucao`. `replenishment_destinations` aparece apenas como leitura visual mockada; regras operacionais reais (GAP-06) ficam para a fase pós-visual.
+Rotas: `/app/loja/estoque` (consulta visual mockada de `stock_balances`), `/app/reposicao`, `/app/reposicao/$reposicaoId` (layout-pai + `.index.tsx`), `/app/reposicao/$reposicaoId/execucao`. As telas de reposição mostrarão **destinos vinculados e quantidades rastreáveis** (`replenishment_destinations`). Continuam **pendentes** — a definir em microetapas decisórias próprias: edição, fluxo específico, visualização conforme etapa, tipos, equação de fechamento, validações, arredondamentos e GAP-06. Não classificar `replenishment_destinations` como "apenas leitura".
 
 ### LV-07 — Contagem e aprovações visuais
-Rotas: `/app/contagem`, `/app/contagem/$contagemId` (layout-pai + `.index.tsx`), `/app/supervisao/aprovacoes` (representa `approvals`, nunca `approval_limits`).
+Rotas: `/app/contagem`, `/app/contagem/$contagemId` (esta rota representa **diretamente a sessão de contagem** — arquivo `src/routes/app.contagem.$contagemId.tsx`; **não existe layout-pai nem arquivo `.index.tsx`** enquanto nenhuma rota filha estiver aprovada), `/app/supervisao/aprovacoes` (representa `approvals`, nunca `approval_limits`).
 
 ### LV-08 — Gestão, rede e administração visual
 - Supervisão: `/app/supervisao`, `/app/supervisao/tarefas`, `/app/supervisao/equipe`.
@@ -181,8 +184,10 @@ Rotas: `/app/contagem`, `/app/contagem/$contagemId` (layout-pai + `.index.tsx`),
 
 ## 6. Fase pós-visual (fora do escopo atual)
 
-Somente após aprovação integral dos protótipos visuais de LV-02 a LV-08:
-- Habilitar Lovable Cloud / Supabase.
+**Lovable Cloud Database permanece absolutamente proibido**, inclusive na fase pós-visual. Futuramente será conectado **somente Supabase próprio**, e apenas quando explicitamente autorizado.
+
+Somente após aprovação integral dos protótipos visuais de LV-02 a LV-08 e autorização explícita:
+- Conectar Supabase próprio (nunca Lovable Cloud Database).
 - Modelar tabelas conforme decisões LV-00A.2.*.
 - Implementar RLS, `has_role`, `role_permissions`, `membership_store_scopes`, `approval_limits`, `support_access_grants`, `device_authorizations`, `integration_inbox`, `integration_attempts`, `operation_requests`, etc.
 - Substituir mocks pelo Data API real, preservando URLs e superfícies visuais decididas.
