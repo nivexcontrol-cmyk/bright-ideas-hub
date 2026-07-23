@@ -1,0 +1,66 @@
+name: quality-node24
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  quality:
+    name: Node 24 + npm 11.18.0
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: "npm"
+
+      - name: Install npm 11.18.0
+        run: npm install --global npm@11.18.0
+
+      - name: Confirm versions
+        run: |
+          node -v
+          npm -v
+          test "$(npm -v)" = "11.18.0"
+
+      - name: Install dependencies (npm ci)
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Behavioral tests
+        run: npm run test
+
+      - name: Accessibility tests
+        run: npm run test:a11y
+
+      - name: Install Playwright Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: E2E (Chromium)
+        run: npm run e2e
+
+      - name: Build
+        run: npm run build
+
+      - name: Verify routeTree.gen.ts is stable
+        run: |
+          if [ -n "$(git status --porcelain src/routeTree.gen.ts)" ]; then
+            echo "src/routeTree.gen.ts foi modificado pelo build"
+            git --no-pager diff src/routeTree.gen.ts
+            exit 1
+          fi
