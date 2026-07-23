@@ -22,6 +22,36 @@ import { EmptyState } from "@/components/feedback/empty-state";
 import { ErrorState } from "@/components/feedback/error-state";
 import { NoPermissionState } from "@/components/feedback/no-permission-state";
 import { LoadingState } from "@/components/feedback/loading-state";
+import { DataTable } from "@/components/data-table/data-table";
+import type { DataTableColumn, DataTableRowAction } from "@/components/data-table/types";
+
+interface TarefaReposicao {
+  id: string;
+  code: string;
+  store: string;
+  responsible: string;
+  situation: string;
+  hour: string;
+}
+
+const tarefasBase: TarefaReposicao[] = Array.from({ length: 20 }, (_, i) => ({
+  id: `tr-${i + 1}`,
+  code: `TR-${String(i + 1).padStart(3, "0")}`,
+  store: `Loja ${String((i % 3) + 1).padStart(3, "0")}`,
+  responsible: ["Ana Souza", "Bruno Lima", "Carla Dias", "Diego Melo"][i % 4],
+  situation: ["Pendente", "Em execução", "Concluído"][i % 3],
+  hour: `${String(8 + (i % 10)).padStart(2, "0")}:${i % 2 === 0 ? "00" : "30"}`,
+}));
+
+const tarefaColunas: DataTableColumn<TarefaReposicao>[] = [
+  { id: "code", header: "Identificação", accessor: (r) => r.code },
+  { id: "store", header: "Loja", accessor: (r) => r.store },
+  { id: "responsible", header: "Responsável", accessor: (r) => r.responsible },
+  { id: "situation", header: "Situação", accessor: (r) => r.situation },
+  { id: "hour", header: "Horário", accessor: (r) => r.hour },
+];
+
+
 
 export const Route = createFileRoute("/")({
   head: () => ({
