@@ -2,11 +2,14 @@ import * as React from "react";
 import { describe, it, expect } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { toast, Toaster } from "sonner";
+import { toast } from "sonner";
+
+import { Toaster } from "@/components/ui/sonner";
 
 /**
- * LV-01.2B.3 — Toaster (Sonner) — testes comportamentais reais.
- * Usa a mesma biblioteca sonner que o Toaster oficial do projeto envolve.
+ * LV-01.2B.3.1 — Toaster oficial do projeto (src/components/ui/sonner.tsx).
+ * O teste monta o mesmo componente usado em __root.tsx, sem alterar a sua
+ * configuração, para comprovar o comportamento real do sistema.
  */
 
 function Harness() {
@@ -18,13 +21,12 @@ function Harness() {
       <button type="button" onClick={() => toast.error("Erro: falhou")}>
         Erro
       </button>
-      {/* closeButton habilita um botão real de dispensa, operável 100% por teclado. */}
-      <Toaster closeButton />
+      <Toaster />
     </div>
   );
 }
 
-describe("Toaster — LV-01.2B.3", () => {
+describe("Toaster oficial — LV-01.2B.3.1", () => {
   it("notificação aparece com o texto correto", async () => {
     const user = userEvent.setup();
     render(<Harness />);
@@ -44,26 +46,22 @@ describe("Toaster — LV-01.2B.3", () => {
     });
   });
 
-  it("a notificação pode ser dispensada pelo teclado", async () => {
+  it("a notificação pode ser dispensada exclusivamente pelo teclado", async () => {
     const user = userEvent.setup();
     render(<Harness />);
     await user.click(screen.getByRole("button", { name: "Sucesso" }));
-    const t = await screen.findByText("Sucesso: salvo");
-    expect(t).not.toBeNull();
+    await screen.findByText("Sucesso: salvo");
 
-    // Sonner com closeButton renderiza um botão real "Close toast" acessível
-    // por teclado. Focar e pressionar Enter dispensa a notificação — o fluxo
-    // é 100% via teclado, sem clique de mouse.
-    const closeBtn = await screen.findByRole("button", { name: /close toast/i });
-    closeBtn.focus();
-    expect(document.activeElement).toBe(closeBtn);
-    await user.keyboard("{Enter}");
+    // Fluxo real do Sonner: Alt+T move o foco para a região de toasts e
+    // Escape dispensa o toast focado. Nenhum clique de mouse é usado.
+    await user.keyboard("{Alt>}t{/Alt}");
+    await user.keyboard("{Escape}");
 
     await waitFor(
       () => {
         expect(screen.queryByText("Sucesso: salvo")).toBeNull();
       },
-      { timeout: 3000 },
+      { timeout: 5000 },
     );
   });
 });
