@@ -184,7 +184,6 @@ describe("RadioGroup", () => {
 
 describe("Acessibilidade dos controles (jest-axe)", () => {
   it("não apresenta violações axe", async () => {
-
     const { container } = render(
       <main>
         <h1>Controles</h1>
