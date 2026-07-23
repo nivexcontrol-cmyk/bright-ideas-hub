@@ -84,7 +84,7 @@ test.describe("Vitrine — rota /", () => {
       // Radios + rótulo (área composta) para cada opção
       for (const nome of ["baixa", "normal", "alta"]) {
         const radio = page.getByRole("radio", { name: new RegExp(`^${nome}$`, "i") });
-        const label = page.locator(`label[for="prio-${nome}"]`);
+        const label = page.locator(`label[for="ctrl-prioridade-${nome}"]`);
         const h = await compositeHeight(page, radio, label);
         expect(h).toBeGreaterThanOrEqual(min);
       }
