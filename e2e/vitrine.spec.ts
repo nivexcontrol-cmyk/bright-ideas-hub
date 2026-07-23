@@ -42,37 +42,71 @@ test.describe("Vitrine — rota /", () => {
     await page.waitForLoadState("networkidle");
 
     const nome = page.getByLabel(/^nome do responsável$/i).first();
+    const email = page.getByLabel(/^e-mail de contato$/i);
+    const obs = page.getByLabel(/^observações$/i);
+    const unidade = page.getByRole("combobox", { name: /^unidade$/i });
+    const aceite = page.getByRole("checkbox", { name: /li e concordo/i });
+    const normal = page.getByRole("radio", { name: /^normal$/i });
+    const alta = page.getByRole("radio", { name: /^alta$/i });
+
+    // Ponto de partida: foca o primeiro campo do formulário e digita.
     await nome.focus();
+    await expect(nome).toBeFocused();
     await page.keyboard.type("Maria");
     await expect(nome).toHaveValue("Maria");
 
-    // avança por Tab até o próximo campo focável (e-mail)
+    // Avança por Tab até o e-mail e confirma foco visível.
     await page.keyboard.press("Tab");
-    const email = page.getByLabel(/^e-mail de contato$/i);
     await expect(email).toBeFocused();
+    expect(await email.evaluate((el) => el.matches(":focus-visible"))).toBe(true);
 
-    // checkbox: verifica foco real por teclado e alternância
-    const aceite = page.getByRole("checkbox", { name: /li e concordo/i });
-    await aceite.focus();
+    // Tab → textarea de observações.
+    await page.keyboard.press("Tab");
+    await expect(obs).toBeFocused();
+    expect(await obs.evaluate((el) => el.matches(":focus-visible"))).toBe(true);
+
+    // Tab → gatilho do select. Abre com Enter, navega com setas, confirma com Enter.
+    await page.keyboard.press("Tab");
+    await expect(unidade).toBeFocused();
+    expect(await unidade.evaluate((el) => el.matches(":focus-visible"))).toBe(true);
+    await page.keyboard.press("Enter");
+    await expect(page.getByRole("option", { name: /loja 001/i })).toBeVisible();
+    await page.keyboard.press("ArrowDown");
+    await page.keyboard.press("ArrowDown");
+    await page.keyboard.press("Enter");
+    await expect(unidade).toContainText(/loja 002/i);
+    await expect(unidade).toBeFocused();
+
+    // Tab → checkbox. Alterna com Espaço (sem clique).
+    await page.keyboard.press("Tab");
     await expect(aceite).toBeFocused();
-    await aceite.click();
+    expect(await aceite.evaluate((el) => el.matches(":focus-visible"))).toBe(true);
+    await expect(aceite).toHaveAttribute("aria-checked", "false");
+    await page.keyboard.press("Space");
+    await expect(aceite).toHaveAttribute("aria-checked", "true");
+    await page.keyboard.press("Space");
+    await expect(aceite).toHaveAttribute("aria-checked", "false");
+    await page.keyboard.press("Space");
     await expect(aceite).toHaveAttribute("aria-checked", "true");
 
-    // radio: navegação e seleção por teclado
-    const baixa = page.getByRole("radio", { name: /^baixa$/i });
-    await baixa.focus();
-    await expect(baixa).toBeFocused();
-    await baixa.click();
-    await expect(baixa).toHaveAttribute("aria-checked", "true");
+    // Tab → grupo de rádios (foco no radio marcado atualmente: "normal").
+    await page.keyboard.press("Tab");
+    await expect(normal).toBeFocused();
+    expect(await normal.evaluate((el) => el.matches(":focus-visible"))).toBe(true);
+    await expect(normal).toHaveAttribute("aria-checked", "true");
 
-    // select: abertura e seleção com teclado
-    const unidade = page.getByRole("combobox", { name: /^unidade$/i });
-    await unidade.focus();
-    await expect(unidade).toBeFocused();
-    await page.keyboard.press("Enter");
-    await page.getByRole("option", { name: /loja 002/i }).click();
-    await expect(unidade).toContainText(/loja 002/i);
+    // Seta para baixo dentro do grupo altera a seleção para "alta".
+    await page.keyboard.press("ArrowDown");
+    await expect(alta).toBeFocused();
+    await expect(alta).toHaveAttribute("aria-checked", "true");
+    await expect(normal).toHaveAttribute("aria-checked", "false");
+
+    // Shift+Tab retorna o foco ao checkbox anterior, confirmando percurso bidirecional.
+    await page.keyboard.press("Shift+Tab");
+    await expect(aceite).toBeFocused();
+    expect(await aceite.evaluate((el) => el.matches(":focus-visible"))).toBe(true);
   });
+
 
   for (const vp of [MOBILE, TABLET, DESKTOP]) {
     const min = vp.width <= 360 ? 48 : 44;
