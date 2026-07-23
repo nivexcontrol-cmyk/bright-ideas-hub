@@ -18,7 +18,7 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run --exclude '**/*.a11y.test.tsx'",
     "test:watch": "vitest --exclude '**/*.a11y.test.tsx'",
-    "test:a11y": "vitest run 'src/test/**/*.a11y.test.tsx'",
+    "test:a11y": "vitest run a11y.test",
     "e2e": "playwright test"
   },
   "dependencies": {
