@@ -52,7 +52,7 @@ test.describe("Vitrine — rota /", () => {
     const aceite = page.getByRole("checkbox", { name: /li e concordo/i });
     await aceite.focus();
     await expect(aceite).toBeFocused();
-    await page.keyboard.press("Space");
+    await aceite.press(" ");
     await expect(aceite).toHaveAttribute("aria-checked", "true");
   });
 
