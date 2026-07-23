@@ -1,8 +1,10 @@
 import * as React from "react";
+import { act } from "react";
 import { describe, it, expect, vi, beforeAll } from "vitest";
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { axe } from "jest-axe";
+
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
