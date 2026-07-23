@@ -1,6 +1,7 @@
 import * as React from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { CheckCircle2, AlertTriangle, XCircle, Info } from "lucide-react";
+import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,6 +16,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { FormField } from "@/components/form/form-field";
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
+import { StatusBadge } from "@/components/feedback/status-badge";
+import { EmptyState } from "@/components/feedback/empty-state";
+import { ErrorState } from "@/components/feedback/error-state";
+import { NoPermissionState } from "@/components/feedback/no-permission-state";
+import { LoadingState } from "@/components/feedback/loading-state";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -402,8 +409,104 @@ function Index() {
           </p>
         </section>
 
+        {/* Feedback — LV-01.2B.3 */}
+        <section
+          aria-labelledby="feedback-titulo"
+          className="mt-6 rounded-[12px] border border-border bg-surface p-4 shadow-sm sm:p-6"
+        >
+          <h2
+            id="feedback-titulo"
+            className="text-xs font-semibold uppercase tracking-wider text-secondary"
+          >
+            Feedback
+          </h2>
+
+          {/* Alertas estáticos (sem região viva) */}
+          <div className="mt-4 grid gap-3 sm:grid-cols-2">
+            <Alert variant="info" live="off">
+              <AlertTitle>Informação</AlertTitle>
+              <AlertDescription>Exemplo estático de alerta informativo.</AlertDescription>
+            </Alert>
+            <Alert variant="success" live="off">
+              <AlertTitle>Sucesso</AlertTitle>
+              <AlertDescription>Exemplo estático de alerta de sucesso.</AlertDescription>
+            </Alert>
+            <Alert variant="warning" live="off">
+              <AlertTitle>Atenção</AlertTitle>
+              <AlertDescription>Exemplo estático de alerta de atenção.</AlertDescription>
+            </Alert>
+            <Alert variant="error" live="off">
+              <AlertTitle>Erro ou bloqueio</AlertTitle>
+              <AlertDescription>Exemplo estático de alerta de erro.</AlertDescription>
+            </Alert>
+          </div>
+
+          {/* StatusBadges */}
+          <div className="mt-6">
+            <span className="block text-sm font-medium text-foreground">Situações</span>
+            <div className="mt-2 flex flex-wrap gap-2">
+              <StatusBadge tone="info">Em análise</StatusBadge>
+              <StatusBadge tone="success">Concluído</StatusBadge>
+              <StatusBadge tone="warning">Pendente</StatusBadge>
+              <StatusBadge tone="error">Bloqueado</StatusBadge>
+            </div>
+          </div>
+
+          {/* Estados de feedback */}
+          <div className="mt-6 grid gap-4 md:grid-cols-2">
+            <EmptyState
+              title="Nada por aqui ainda"
+              description="Assim que houver registros nesta unidade, eles aparecerão nesta lista."
+              actionLabel="Recarregar exemplo"
+              onAction={() => {
+                /* apenas vitrine */
+              }}
+            />
+            <ErrorState
+              title="Não foi possível carregar"
+              description="Verifique a conexão e tente novamente em alguns instantes."
+              retryLabel="Tentar novamente"
+              onRetry={() => {
+                /* apenas vitrine */
+              }}
+            />
+            <NoPermissionState />
+            <LoadingState label="Carregando exemplo de conteúdo…" rows={3} />
+          </div>
+
+          {/* Notificações (Sonner) */}
+          <div className="mt-6">
+            <span className="block text-sm font-medium text-foreground">Notificações</span>
+            <div className="mt-2 flex flex-wrap gap-3">
+              <Button
+                type="button"
+                onClick={() => toast.success("Operação concluída com sucesso.")}
+              >
+                Disparar sucesso
+              </Button>
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={() => toast.error("Não foi possível concluir a operação.")}
+              >
+                Disparar erro
+              </Button>
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={() => {
+                  toast.success("Primeira notificação empilhada.");
+                  toast.error("Segunda notificação empilhada.");
+                }}
+              >
+                Empilhar duas
+              </Button>
+            </div>
+          </div>
+        </section>
+
         <footer className="mt-10 text-center text-xs text-foreground">
-          Nivex Control — LV-01.2B.2 — Controles e formulário
+          Nivex Control — LV-01.2B.3 — Feedback e comunicação visual
         </footer>
       </div>
     </main>

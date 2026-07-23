@@ -164,4 +164,72 @@ test.describe("Vitrine — rota /", () => {
       await expect(radio).toHaveCount(1);
     }
   });
+
+  test("seção Feedback renderiza alertas, badges e estados", async ({ page }) => {
+    await page.setViewportSize(DESKTOP);
+    await page.goto("/");
+
+    await expect(page.getByRole("heading", { level: 2, name: /^feedback$/i })).toBeVisible();
+
+    // Quatro alertas estáticos (não devem ter role status/alert — são live=off).
+    for (const label of [/^informação$/i, /^sucesso$/i, /^atenção$/i, /^erro ou bloqueio$/i]) {
+      await expect(page.getByText(label).first()).toBeVisible();
+    }
+
+    // Badges.
+    for (const t of [/em análise/i, /concluído/i, /pendente/i, /bloqueado/i]) {
+      await expect(page.getByText(t).first()).toBeVisible();
+    }
+
+    // Estados.
+    await expect(page.getByText(/nada por aqui ainda/i)).toBeVisible();
+    await expect(page.getByText(/não foi possível carregar/i)).toBeVisible();
+    await expect(page.getByText(/acesso indisponível/i)).toBeVisible();
+    await expect(page.locator('[aria-busy="true"]')).toBeVisible();
+
+    // Sem violações axe na página completa.
+    const results = await new AxeBuilder({ page })
+      .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"])
+      .analyze();
+    expect(results.violations).toEqual([]);
+  });
+
+  test("toasts: disparo, empilhamento, dispensa por teclado e foco teal", async ({ page }) => {
+    await page.setViewportSize(DESKTOP);
+    await page.goto("/");
+
+    const sucesso = page.getByRole("button", { name: /^disparar sucesso$/i });
+    const erro = page.getByRole("button", { name: /^disparar erro$/i });
+    const empilhar = page.getByRole("button", { name: /^empilhar duas$/i });
+
+    // Foco visível teal (3px) no botão.
+    await sucesso.focus();
+    await expect(sucesso).toBeFocused();
+    const outline = await sucesso.evaluate((el) => getComputedStyle(el).outlineColor);
+    // teal #0f6b78 => rgb(15, 107, 120)
+    expect(outline).toMatch(/rgb\(\s*15\s*,\s*107\s*,\s*120\s*\)/);
+
+    // Disparo de sucesso.
+    await page.keyboard.press("Enter");
+    await expect(page.getByText(/operação concluída com sucesso\./i)).toBeVisible();
+
+    // Disparo de erro.
+    await erro.click();
+    await expect(page.getByText(/não foi possível concluir a operação\./i)).toBeVisible();
+
+    // Empilhamento: dois toasts simultâneos.
+    await empilhar.click();
+    await expect(page.getByText(/primeira notificação empilhada\./i)).toBeVisible();
+    await expect(page.getByText(/segunda notificação empilhada\./i)).toBeVisible();
+
+    // Dispensa por teclado: hotkey padrão do Sonner (Alt+T) + Escape.
+    await page.keyboard.press("Alt+T");
+    await page.keyboard.press("Escape");
+    await page.keyboard.press("Escape");
+    await page.keyboard.press("Escape");
+    await page.keyboard.press("Escape");
+    await expect(page.getByText(/primeira notificação empilhada\./i)).toHaveCount(0, {
+      timeout: 5000,
+    });
+  });
 });
