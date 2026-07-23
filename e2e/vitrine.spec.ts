@@ -204,15 +204,37 @@ test.describe("Vitrine — rota /", () => {
     const erro = page.getByRole("button", { name: /^disparar erro$/i });
     const empilhar = page.getByRole("button", { name: /^empilhar duas$/i });
 
-    // Foco visível teal (3px) no botão.
+    // Foco visível teal (3px) no botão — usa somente teclado e aguarda o
+    // fim da transição de cores para ler a cor final do contorno.
+    await page.getByLabel(/^observações$/i).focus();
+    await page.keyboard.press("Tab"); // observações → unidade… navega até o botão
+    // Trajeto por teclado até o botão "Confirmar" para garantir :focus-visible.
     await sucesso.focus();
+    // Simula que o foco veio por teclado (necessário para :focus-visible em
+    // alguns motores após um focus() programático).
+    await page.keyboard.press("Shift+Tab");
+    await page.keyboard.press("Tab");
     await expect(sucesso).toBeFocused();
-    const outline = await sucesso.evaluate((el) => getComputedStyle(el).outlineColor);
-    // teal #0f6b78 => rgb(15, 107, 120)
-    expect(outline).toMatch(/rgb\(\s*15\s*,\s*107\s*,\s*120\s*\)/);
-
-    // Disparo de sucesso.
-    await page.keyboard.press("Enter");
+    expect(await sucesso.evaluate((el) => el.matches(":focus-visible"))).toBe(true);
+    // Aguarda a transição terminar antes de ler a cor final do outline.
+    await sucesso.evaluate(
+      (el) =>
+        new Promise<void>((resolve) => {
+          const style = getComputedStyle(el);
+          const dur = style.transitionDuration
+            .split(",")
+            .map((v) => parseFloat(v) * (v.includes("ms") ? 1 : 1000))
+            .reduce((a, b) => Math.max(a, b), 0);
+          setTimeout(resolve, Math.max(dur, 200) + 50);
+        }),
+    );
+    // teal oficial #0F6B78 => rgb(15, 107, 120), 3px sólido.
+    const outlineColor = await sucesso.evaluate((el) => getComputedStyle(el).outlineColor);
+    const outlineStyle = await sucesso.evaluate((el) => getComputedStyle(el).outlineStyle);
+    const outlineWidth = await sucesso.evaluate((el) => getComputedStyle(el).outlineWidth);
+    expect(outlineColor).toMatch(/rgb\(\s*15\s*,\s*107\s*,\s*120\s*\)/);
+    expect(outlineStyle).toBe("solid");
+    expect(outlineWidth).toBe("3px");
     await expect(page.getByText(/operação concluída com sucesso\./i)).toBeVisible();
 
     // Disparo de erro.
