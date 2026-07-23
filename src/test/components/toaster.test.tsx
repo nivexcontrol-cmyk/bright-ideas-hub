@@ -5,10 +5,8 @@ import userEvent from "@testing-library/user-event";
 import { toast, Toaster } from "sonner";
 
 /**
- * LV-01.2B.3 — Toaster (Sonner) behavioral tests.
- * O Toaster real de src/components/ui/sonner.tsx é apenas um wrapper visual
- * do <Toaster /> de sonner. Aqui usamos o mesmo componente `sonner` para
- * exercitar o comportamento real de empilhamento e dispensa.
+ * LV-01.2B.3 — Toaster (Sonner) — testes comportamentais reais.
+ * Usa a mesma biblioteca sonner que o Toaster oficial do projeto envolve.
  */
 
 function Harness() {
@@ -30,9 +28,8 @@ describe("Toaster — LV-01.2B.3", () => {
     const user = userEvent.setup();
     render(<Harness />);
     await user.click(screen.getByRole("button", { name: "Sucesso" }));
-    await waitFor(() => {
-      expect(screen.getByText("Sucesso: salvo")).toBeInTheDocument();
-    });
+    const t = await screen.findByText("Sucesso: salvo");
+    expect(t).not.toBeNull();
   });
 
   it("duas notificações podem ser empilhadas", async () => {
@@ -41,8 +38,8 @@ describe("Toaster — LV-01.2B.3", () => {
     await user.click(screen.getByRole("button", { name: "Sucesso" }));
     await user.click(screen.getByRole("button", { name: "Erro" }));
     await waitFor(() => {
-      expect(screen.getByText("Sucesso: salvo")).toBeInTheDocument();
-      expect(screen.getByText("Erro: falhou")).toBeInTheDocument();
+      expect(screen.getByText("Sucesso: salvo")).not.toBeNull();
+      expect(screen.getByText("Erro: falhou")).not.toBeNull();
     });
   });
 
@@ -50,13 +47,11 @@ describe("Toaster — LV-01.2B.3", () => {
     const user = userEvent.setup();
     render(<Harness />);
     await user.click(screen.getByRole("button", { name: "Sucesso" }));
-    const toastEl = await screen.findByText("Sucesso: salvo");
-    expect(toastEl).toBeInTheDocument();
+    const t = await screen.findByText("Sucesso: salvo");
+    expect(t).not.toBeNull();
 
-    // Sonner captura F6 para focar a região de toasts e permite dispensar
-    // com a tecla configurada (padrão: T seguido de foco + escape).
-    // Usamos o hotkey padrão ("altKey+T") para mover o foco à região viva
-    // e então Escape para descartar o toast focado.
+    // Sonner move o foco à região de toasts com Alt+T (hotkey padrão) e permite
+    // dispensar o toast focado com Escape — completamente por teclado.
     await user.keyboard("{Alt>}t{/Alt}");
     await user.keyboard("{Escape}");
 

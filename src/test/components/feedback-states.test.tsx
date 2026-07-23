@@ -15,7 +15,7 @@ describe("StatusBadge", () => {
     "tom %s exibe texto e sinal visual (ícone SVG)",
     (tone) => {
       const { container } = render(<StatusBadge tone={tone}>Rótulo</StatusBadge>);
-      expect(screen.getByText("Rótulo")).toBeInTheDocument();
+      expect(screen.getByText("Rótulo")).not.toBeNull();
       expect(container.querySelector("svg")).not.toBeNull();
       const badge = container.querySelector("[data-tone]");
       expect(badge?.getAttribute("data-tone")).toBe(tone);
@@ -31,8 +31,8 @@ describe("StatusBadge", () => {
 describe("EmptyState", () => {
   it("mostra título e descrição", () => {
     render(<EmptyState title="Vazio" description="Nada aqui." />);
-    expect(screen.getByText("Vazio")).toBeInTheDocument();
-    expect(screen.getByText("Nada aqui.")).toBeInTheDocument();
+    expect(screen.getByText("Vazio")).not.toBeNull();
+    expect(screen.getByText("Nada aqui.")).not.toBeNull();
   });
 
   it("ação opcional dispara o callback correto", async () => {
@@ -54,8 +54,8 @@ describe("EmptyState", () => {
 describe("ErrorState", () => {
   it("mostra título e descrição não técnicos", () => {
     render(<ErrorState title="Erro" description="Tente de novo em alguns instantes." />);
-    expect(screen.getByText("Erro")).toBeInTheDocument();
-    expect(screen.getByText(/tente de novo/i)).toBeInTheDocument();
+    expect(screen.getByText("Erro")).not.toBeNull();
+    expect(screen.getByText(/tente de novo/i)).not.toBeNull();
   });
 
   it("ação opcional executa o callback correto", async () => {
@@ -74,21 +74,18 @@ describe("ErrorState", () => {
   });
 
   it("não expõe detalhes técnicos: renderiza apenas as strings fornecidas", () => {
-    const stack = "TypeError: undefined at foo (bar.ts:42:7)";
     render(<ErrorState title="Erro" description="Mensagem amigável." />);
-    // O componente só renderiza os textos passados; stack técnico não vaza.
-    expect(screen.queryByText(stack)).toBeNull();
     expect(screen.queryByText(/TypeError/i)).toBeNull();
     expect(screen.queryByText(/undefined/i)).toBeNull();
     expect(screen.queryByText(/\.ts:/i)).toBeNull();
+    expect(screen.queryByText(/stack/i)).toBeNull();
   });
 });
 
 describe("NoPermissionState", () => {
   it("mensagem neutra, sem revelar conteúdo protegido", () => {
     render(<NoPermissionState />);
-    expect(screen.getByText(/acesso indisponível/i)).toBeInTheDocument();
-    // Não mencionar IDs, tabelas, quantidades ou nomes de recursos internos.
+    expect(screen.getByText(/acesso indisponível/i)).not.toBeNull();
     expect(screen.queryByText(/id\s*[:=]/i)).toBeNull();
     expect(screen.queryByText(/tabela/i)).toBeNull();
     expect(screen.queryByText(/quantidade/i)).toBeNull();
@@ -112,7 +109,6 @@ describe("LoadingState", () => {
     expect(region).not.toBeNull();
     expect(region?.getAttribute("aria-busy")).toBe("true");
     expect(region?.getAttribute("aria-live")).toBe("polite");
-    // Skeletons têm dimensões definidas (h-4) — não colapsam.
     const skeletons = container.querySelectorAll(".animate-pulse");
     expect(skeletons.length).toBeGreaterThanOrEqual(3);
   });
@@ -133,6 +129,6 @@ describe("Feedback states — jest-axe", () => {
       </div>,
     );
     const results = await axe(container);
-    expect(results).toHaveNoViolations();
+    expect(results.violations).toEqual([]);
   });
 });

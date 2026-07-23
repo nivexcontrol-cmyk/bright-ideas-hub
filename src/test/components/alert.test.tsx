@@ -14,7 +14,7 @@ describe("Alert — LV-01.2B.3", () => {
       </Alert>,
     );
     const el = screen.getByRole("alert");
-    expect(el).toHaveAttribute("aria-live", "assertive");
+    expect(el.getAttribute("aria-live")).toBe("assertive");
   });
 
   it("destructive dinâmico (compatibilidade) usa role alert e aria-live assertive", () => {
@@ -25,7 +25,7 @@ describe("Alert — LV-01.2B.3", () => {
       </Alert>,
     );
     const el = screen.getByRole("alert");
-    expect(el).toHaveAttribute("aria-live", "assertive");
+    expect(el.getAttribute("aria-live")).toBe("assertive");
   });
 
   it.each(["info", "success", "warning"] as const)(
@@ -38,7 +38,7 @@ describe("Alert — LV-01.2B.3", () => {
         </Alert>,
       );
       const el = screen.getByRole("status");
-      expect(el).toHaveAttribute("aria-live", "polite");
+      expect(el.getAttribute("aria-live")).toBe("polite");
       expect(el.getAttribute("data-variant")).toBe(variant);
     },
   );
@@ -46,11 +46,11 @@ describe("Alert — LV-01.2B.3", () => {
   it("alertas estáticos (live=off) não mantêm região viva ativa", () => {
     const { container } = render(
       <>
-        <Alert variant="info" live="off" data-testid="a">
+        <Alert variant="info" live="off">
           <AlertTitle>Info</AlertTitle>
           <AlertDescription>x</AlertDescription>
         </Alert>
-        <Alert variant="error" live="off" data-testid="b">
+        <Alert variant="error" live="off">
           <AlertTitle>Erro</AlertTitle>
           <AlertDescription>y</AlertDescription>
         </Alert>
@@ -76,11 +76,9 @@ describe("Alert — LV-01.2B.3", () => {
           <AlertDescription>Texto descritivo.</AlertDescription>
         </Alert>,
       );
-      // ícone
       expect(container.querySelector("svg")).not.toBeNull();
-      // texto visível
-      expect(screen.getByText("Título")).toBeInTheDocument();
-      expect(screen.getByText("Texto descritivo.")).toBeInTheDocument();
+      expect(screen.getByText("Título")).not.toBeNull();
+      expect(screen.getByText("Texto descritivo.")).not.toBeNull();
     },
   );
 });
@@ -112,6 +110,6 @@ describe("Alert — jest-axe", () => {
       </div>,
     );
     const results = await axe(container);
-    expect(results).toHaveNoViolations();
+    expect(results.violations).toEqual([]);
   });
 });
