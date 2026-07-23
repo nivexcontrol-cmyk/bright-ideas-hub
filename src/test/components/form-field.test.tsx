@@ -45,10 +45,10 @@ describe("FormField", () => {
   it("aplica aria-invalid e referencia a mensagem de erro", () => {
     render(<Harness error="Informe um nome válido." />);
     const input = screen.getByLabelText(/nome do responsável/i);
-    expect(input).toHaveAttribute("aria-invalid", "true");
+    expect(input.getAttribute("aria-invalid")).toBe("true");
 
     const alert = screen.getByRole("alert");
-    expect(alert).toHaveTextContent(/informe um nome válido/i);
+    expect(alert.textContent ?? "").toMatch(/informe um nome válido/i);
     const describedBy = input.getAttribute("aria-describedby") ?? "";
     expect(describedBy.split(" ")).toContain(alert.id);
 
@@ -61,7 +61,7 @@ describe("FormField", () => {
     expect(screen.queryByRole("alert")).toBeNull();
 
     rerender(<Harness error="Obrigatório." />);
-    expect(screen.getByRole("alert")).toBeInTheDocument();
+    expect(screen.getByRole("alert")).not.toBeNull();
 
     rerender(<Harness />);
     expect(screen.queryByRole("alert")).toBeNull();
@@ -78,6 +78,3 @@ describe("FormField", () => {
     expect(results.violations).toEqual([]);
   });
 });
-
-// remove import não utilizado
-void _r;
