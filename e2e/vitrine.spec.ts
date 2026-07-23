@@ -320,14 +320,37 @@ test.describe("Vitrine — rota /", () => {
     await page.goto("/");
     const v = page.getByTestId("dt-vinte-root");
 
+    // Confirma hidratação do DataTable com uma interação real antes da busca:
+    // ordena por teclado, aguarda o estado controlado refletir em aria-sort
+    // e retorna a coluna ao estado neutro.
+    const sortBtn = v.getByTestId("dt-vinte-sort-code");
+    const headerCode = v.locator('th:has([data-testid="dt-vinte-sort-code"])');
+    await sortBtn.focus();
+    await expect(sortBtn).toBeFocused();
+    // Foco visível teal 3 px sólido.
+    expect(await sortBtn.evaluate((el) => getComputedStyle(el).outlineStyle)).toBe("solid");
+    expect(await sortBtn.evaluate((el) => getComputedStyle(el).outlineWidth)).toBe("3px");
+    await expect
+      .poll(async () => {
+        const current = await headerCode.getAttribute("aria-sort");
+        if (current === "ascending") return current;
+        await sortBtn.press("Enter");
+        return headerCode.getAttribute("aria-sort");
+      })
+      .toBe("ascending");
+    await page.keyboard.press("Space");
+    await expect(headerCode).toHaveAttribute("aria-sort", "descending");
+    await page.keyboard.press("Enter");
+    await expect(headerCode).toHaveAttribute("aria-sort", "none");
+
     // Busca real por teclado. Foca o campo com press("Tab") a partir do
-    // cabeçalho da seção "vinte" e digita caractere a caractere.
+    // DataTable hidratado e digita caractere a caractere.
     const search = v.getByLabel(/buscar registros/i);
     await search.focus();
     await expect(search).toBeFocused();
     // Garante estado inicial vazio antes de digitar.
     await expect(search).toHaveValue("");
-    await page.keyboard.type("TR-002", { delay: 20 });
+    await search.pressSequentially("TR-002", { delay: 25 });
     await expect(search).toHaveValue("TR-002");
     // Aguarda a atualização do DataTable via asserções com polling nativo.
     const cellTR002 = v.getByRole("cell", { name: "TR-002", exact: true });
@@ -345,23 +368,9 @@ test.describe("Vitrine — rota /", () => {
     await expect(cellTR001).toBeVisible();
     await expect(cellTR002).toBeVisible();
 
-    // Ordenação por teclado no cabeçalho "Identificação".
-    const sortBtn = v.getByTestId("dt-vinte-sort-code");
-    await sortBtn.focus();
-    await expect(sortBtn).toBeFocused();
-    // Foco visível teal 3 px sólido.
-    expect(await sortBtn.evaluate((el) => getComputedStyle(el).outlineStyle)).toBe("solid");
-    expect(await sortBtn.evaluate((el) => getComputedStyle(el).outlineWidth)).toBe("3px");
-    await page.keyboard.press("Enter");
-    const headerCode = v.locator('th:has([data-testid="dt-vinte-sort-code"])');
-    await expect(headerCode).toHaveAttribute("aria-sort", "ascending");
-    await page.keyboard.press("Space");
-    await expect(headerCode).toHaveAttribute("aria-sort", "descending");
-    await page.keyboard.press("Enter");
-    await expect(headerCode).toHaveAttribute("aria-sort", "none");
-
     // Paginação: localiza pela navigation acessível e pelos nomes acessíveis dos botões.
     const pagination = v.getByRole("navigation", { name: /^paginação$/i });
+    await expect(pagination).toContainText(/20 registros/i);
     const next = pagination.getByRole("button", { name: /^próxima página$/i });
     const prev = pagination.getByRole("button", { name: /^página anterior$/i });
     await expect(prev).toBeDisabled();
