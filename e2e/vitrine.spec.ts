@@ -95,9 +95,11 @@ test.describe("Vitrine — rota /", () => {
     expect(await normal.evaluate((el) => el.matches(":focus-visible"))).toBe(true);
     await expect(normal).toHaveAttribute("aria-checked", "true");
 
-    // Seta para baixo dentro do grupo altera a seleção para "alta".
+    // Seta para baixo dentro do grupo move o foco para "alta"; a seleção é
+    // confirmada com a barra de espaço, mantendo a operação 100% por teclado.
     await page.keyboard.press("ArrowDown");
     await expect(alta).toBeFocused();
+    await page.keyboard.press("Space");
     await expect(alta).toHaveAttribute("aria-checked", "true");
     await expect(normal).toHaveAttribute("aria-checked", "false");
 
