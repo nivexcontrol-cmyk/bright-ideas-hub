@@ -65,24 +65,42 @@ test.describe("Vitrine — rota /", () => {
     await expect(obs).toBeFocused();
     expect(await obs.evaluate((el) => el.matches(":focus-visible"))).toBe(true);
 
-    // Tab → gatilho do select. Abre com Enter, navega com setas verificando o
-    // destaque a cada passo e confirma com Enter. A sequência é determinística:
-    // Home garante o topo da lista (Loja 001), ArrowDown avança uma opção
-    // (Loja 002); ambos os destaques são conferidos antes da confirmação.
+    // Tab → gatilho do select. A sequência é 100% por teclado e determinística:
+    // 1) abre a lista com Space; 2) aguarda as opções renderizarem;
+    // 3) ancora o destaque no topo com Home e confirma via polling que
+    //    "Loja 001" está de fato destacada (Radix aplica data-highlighted
+    //    após o próximo tick, então esperamos o estado intermediário);
+    // 4) avança uma opção com ArrowDown e valida, também via polling, que
+    //    "Loja 002" recebeu o destaque antes de confirmar;
+    // 5) confirma com Enter e verifica fechamento, valor e devolução de foco.
     await page.keyboard.press("Tab");
     await expect(unidade).toBeFocused();
     expect(await unidade.evaluate((el) => el.matches(":focus-visible"))).toBe(true);
-    await page.keyboard.press("Enter");
+    await page.keyboard.press("Space");
     const opcaoLoja001 = page.getByRole("option", { name: /loja 001/i });
     const opcaoLoja002 = page.getByRole("option", { name: /loja 002/i });
     await expect(opcaoLoja001).toBeVisible();
     await expect(opcaoLoja002).toBeVisible();
+
     await page.keyboard.press("Home");
-    await expect(opcaoLoja001).toHaveAttribute("data-highlighted", "");
+    await expect
+      .poll(async () => opcaoLoja001.getAttribute("data-highlighted"), { timeout: 2000 })
+      .toBe("");
+    await expect
+      .poll(async () => opcaoLoja002.getAttribute("data-highlighted"), { timeout: 2000 })
+      .toBeNull();
+
     await page.keyboard.press("ArrowDown");
-    await expect(opcaoLoja002).toHaveAttribute("data-highlighted", "");
+    await expect
+      .poll(async () => opcaoLoja002.getAttribute("data-highlighted"), { timeout: 2000 })
+      .toBe("");
+    await expect
+      .poll(async () => opcaoLoja001.getAttribute("data-highlighted"), { timeout: 2000 })
+      .toBeNull();
+
     await page.keyboard.press("Enter");
     await expect(opcaoLoja001).toHaveCount(0);
+    await expect(opcaoLoja002).toHaveCount(0);
     await expect(unidade).toContainText(/loja 002/i);
     await expect(unidade).toBeFocused();
 
