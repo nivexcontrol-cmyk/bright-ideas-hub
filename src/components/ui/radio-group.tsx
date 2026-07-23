@@ -4,6 +4,11 @@ import { Circle } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
+/*
+ * Nivex Control — RadioGroup (LV-01.2B.2)
+ * A marca visual permanece compacta. A área clicável total (controle + rótulo
+ * associado por htmlFor/id) precisa alcançar 48 px no celular e 44 px no desktop.
+ */
 const RadioGroup = React.forwardRef<
   React.ElementRef<typeof RadioGroupPrimitive.Root>,
   React.ComponentPropsWithoutRef<typeof RadioGroupPrimitive.Root>
@@ -20,13 +25,13 @@ const RadioGroupItem = React.forwardRef<
     <RadioGroupPrimitive.Item
       ref={ref}
       className={cn(
-        "aspect-square h-4 w-4 rounded-full border border-primary text-primary shadow cursor-pointer focus:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50",
+        "aspect-square h-5 w-5 rounded-full border border-primary bg-surface text-primary shadow-sm cursor-pointer disabled:cursor-not-allowed disabled:opacity-60",
         className,
       )}
       {...props}
     >
       <RadioGroupPrimitive.Indicator className="flex items-center justify-center">
-        <Circle className="h-3.5 w-3.5 fill-primary" />
+        <Circle className="h-3 w-3 fill-primary text-primary" />
       </RadioGroupPrimitive.Indicator>
     </RadioGroupPrimitive.Item>
   );
