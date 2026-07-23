@@ -1,8 +1,27 @@
-import { test, expect } from "@playwright/test";
+import { test, expect, type Page } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 
 const MOBILE = { width: 360, height: 780 };
+const TABLET = { width: 768, height: 1024 };
 const DESKTOP = { width: 1440, height: 900 };
+
+async function measure(page: Page, locator: ReturnType<Page["locator"]>) {
+  const box = await locator.boundingBox();
+  if (!box) throw new Error("elemento sem boundingBox");
+  return box;
+}
+
+async function compositeHeight(
+  page: Page,
+  controlLocator: ReturnType<Page["locator"]>,
+  labelLocator: ReturnType<Page["locator"]>,
+) {
+  const c = await measure(page, controlLocator);
+  const l = await measure(page, labelLocator);
+  const top = Math.min(c.y, l.y);
+  const bottom = Math.max(c.y + c.height, l.y + l.height);
+  return bottom - top;
+}
 
 test.describe("Vitrine — rota /", () => {
   test("exibe Nivex Control e a seção Controles sem violações axe", async ({ page }) => {
@@ -26,12 +45,10 @@ test.describe("Vitrine — rota /", () => {
     await page.keyboard.type("Maria");
     await expect(nome).toHaveValue("Maria");
 
-    // avança por Tab até o próximo campo focável (e-mail)
     await page.keyboard.press("Tab");
     const email = page.getByLabel(/^e-mail de contato$/i);
     await expect(email).toBeFocused();
 
-    // checkbox por teclado (foca o controle real e aciona com Espaço)
     const aceite = page.getByRole("checkbox", { name: /li e concordo/i });
     await aceite.focus();
     await expect(aceite).toBeFocused();
@@ -39,27 +56,49 @@ test.describe("Vitrine — rota /", () => {
     await expect(aceite).toHaveAttribute("aria-checked", "true");
   });
 
-  test("controles atendem 44 px no desktop e 48 px no celular", async ({ page }) => {
-    // Desktop
-    await page.setViewportSize(DESKTOP);
-    await page.goto("/");
-    const btnDesktop = page.getByRole("button", { name: /^confirmar$/i });
-    const inputDesktop = page.getByLabel(/^nome do responsável$/i).first();
-    const btnBox = await btnDesktop.boundingBox();
-    const inpBox = await inputDesktop.boundingBox();
-    expect(btnBox!.height).toBeGreaterThanOrEqual(44);
-    expect(inpBox!.height).toBeGreaterThanOrEqual(44);
+  for (const vp of [MOBILE, TABLET, DESKTOP]) {
+    const min = vp.width <= 360 ? 48 : 44;
+    test(`controles, checkbox+rótulo e rádios+rótulo atingem ${min} px em ${vp.width}px`, async ({
+      page,
+    }) => {
+      await page.setViewportSize(vp);
+      await page.goto("/");
 
-    // Celular
-    await page.setViewportSize(MOBILE);
-    await page.reload();
-    const btnMobile = page.getByRole("button", { name: /^confirmar$/i });
-    const inputMobile = page.getByLabel(/^nome do responsável$/i).first();
-    const btnBoxM = await btnMobile.boundingBox();
-    const inpBoxM = await inputMobile.boundingBox();
-    expect(btnBoxM!.height).toBeGreaterThanOrEqual(48);
-    expect(inpBoxM!.height).toBeGreaterThanOrEqual(48);
-  });
+      // Controles simples: botão, input, textarea, select
+      const btn = page.getByRole("button", { name: /^confirmar$/i });
+      const input = page.getByLabel(/^nome do responsável$/i).first();
+      const textarea = page.getByLabel(/^observações$/i);
+      const select = page.getByRole("combobox", { name: /^unidade$/i });
+
+      for (const loc of [btn, input, textarea, select]) {
+        const box = await measure(page, loc);
+        expect(box.height).toBeGreaterThanOrEqual(min);
+      }
+
+      // Checkbox + rótulo (área composta)
+      const cb = page.getByRole("checkbox", { name: /li e concordo/i });
+      const cbLabel = page.locator('label[for="aceite"]');
+      const cbHeight = await compositeHeight(page, cb, cbLabel);
+      expect(cbHeight).toBeGreaterThanOrEqual(min);
+
+      // Radios + rótulo (área composta) para cada opção
+      for (const nome of ["baixa", "normal", "alta"]) {
+        const radio = page.getByRole("radio", { name: new RegExp(`^${nome}$`, "i") });
+        const label = page.locator(`label[for="prio-${nome}"]`);
+        const h = await compositeHeight(page, radio, label);
+        expect(h).toBeGreaterThanOrEqual(min);
+      }
+    });
+
+    test(`sem rolagem horizontal em ${vp.width} px`, async ({ page }) => {
+      await page.setViewportSize(vp);
+      await page.goto("/");
+      const overflow = await page.evaluate(
+        () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+      );
+      expect(overflow).toBeLessThanOrEqual(0);
+    });
+  }
 
   test("labels de checkbox e radio estão associados individualmente", async ({ page }) => {
     await page.setViewportSize(DESKTOP);
@@ -72,14 +111,5 @@ test.describe("Vitrine — rota /", () => {
       const radio = page.getByRole("radio", { name: new RegExp(`^${nome}$`, "i") });
       await expect(radio).toHaveCount(1);
     }
-  });
-
-  test("sem rolagem horizontal em 360 px", async ({ page }) => {
-    await page.setViewportSize(MOBILE);
-    await page.goto("/");
-    const overflow = await page.evaluate(
-      () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
-    );
-    expect(overflow).toBeLessThanOrEqual(0);
   });
 });
