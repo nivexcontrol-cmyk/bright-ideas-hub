@@ -32,6 +32,15 @@ const TONE_ICON: Record<
   error: XCircle,
 };
 
+// Ícones mantêm a cor oficial da tonalidade mesmo quando o rótulo usa outro
+// token (caso do sucesso, cujo texto usa --foreground para contraste AA).
+const TONE_ICON_CLASSES: Record<StatusTone, string> = {
+  info: "text-info",
+  success: "text-success",
+  warning: "text-warning",
+  error: "text-destructive",
+};
+
 const TONE_PREFIX: Record<StatusTone, string> = {
   info: "Informação",
   success: "Sucesso",
