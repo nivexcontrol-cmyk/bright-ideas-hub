@@ -15,11 +15,7 @@ import { Input } from "@/components/ui/input";
 
 function Harness({ error }: { error?: string }) {
   return (
-    <FormField
-      label="Nome do responsável"
-      description="Usado apenas para exibição."
-      error={error}
-    >
+    <FormField label="Nome do responsável" description="Usado apenas para exibição." error={error}>
       {({ id, describedBy, invalid }) => (
         <Input
           id={id}

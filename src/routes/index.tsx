@@ -232,10 +232,7 @@ function Index() {
           <div className="mt-6 grid gap-6 md:grid-cols-2">
             {/* Input com ajuda neutra */}
             <div>
-              <label
-                htmlFor="ctrl-nome"
-                className="block text-sm font-medium text-foreground"
-              >
+              <label htmlFor="ctrl-nome" className="block text-sm font-medium text-foreground">
                 Nome do responsável
               </label>
               <Input
@@ -255,10 +252,7 @@ function Index() {
 
             {/* Input inválido */}
             <div>
-              <label
-                htmlFor="ctrl-email"
-                className="block text-sm font-medium text-foreground"
-              >
+              <label htmlFor="ctrl-email" className="block text-sm font-medium text-foreground">
                 E-mail de contato
               </label>
               <Input
@@ -285,10 +279,7 @@ function Index() {
 
             {/* Textarea */}
             <div>
-              <label
-                htmlFor="ctrl-obs"
-                className="block text-sm font-medium text-foreground"
-              >
+              <label htmlFor="ctrl-obs" className="block text-sm font-medium text-foreground">
                 Observações
               </label>
               <Textarea
@@ -303,10 +294,7 @@ function Index() {
 
             {/* Select */}
             <div>
-              <label
-                htmlFor="ctrl-unidade"
-                className="block text-sm font-medium text-foreground"
-              >
+              <label htmlFor="ctrl-unidade" className="block text-sm font-medium text-foreground">
                 Unidade
               </label>
               <Select value={unidade} onValueChange={setUnidade}>
@@ -339,7 +327,10 @@ function Index() {
 
             {/* Radio group */}
             <div>
-              <span id="ctrl-prioridade-label" className="block text-sm font-medium text-foreground">
+              <span
+                id="ctrl-prioridade-label"
+                className="block text-sm font-medium text-foreground"
+              >
                 Prioridade
               </span>
               <RadioGroup
@@ -374,7 +365,9 @@ function Index() {
             <FormField
               label="Identificador de tarefa"
               description="Use o formato TSK-0000 apenas para demonstração."
-              error={nome.length > 0 && nome.length < 3 ? "Informe ao menos 3 caracteres." : undefined}
+              error={
+                nome.length > 0 && nome.length < 3 ? "Informe ao menos 3 caracteres." : undefined
+              }
               required
             >
               {({ id, describedBy, invalid }) => (

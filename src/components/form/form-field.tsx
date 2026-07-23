@@ -51,10 +51,7 @@ export function FormField({
 
   return (
     <div className={cn("flex w-full flex-col gap-1.5", className)}>
-      <label
-        htmlFor={id}
-        className={cn("text-sm font-medium text-foreground", labelClassName)}
-      >
+      <label htmlFor={id} className={cn("text-sm font-medium text-foreground", labelClassName)}>
         {label}
         {required ? (
           <span aria-hidden="true" className="ml-0.5 text-destructive">
