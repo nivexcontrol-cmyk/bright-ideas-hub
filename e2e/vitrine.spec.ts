@@ -204,37 +204,40 @@ test.describe("Vitrine — rota /", () => {
     const erro = page.getByRole("button", { name: /^disparar erro$/i });
     const empilhar = page.getByRole("button", { name: /^empilhar duas$/i });
 
-    // Foco visível teal (3px) no botão — usa somente teclado e aguarda o
-    // fim da transição de cores para ler a cor final do contorno.
-    await page.getByLabel(/^observações$/i).focus();
-    await page.keyboard.press("Tab"); // observações → unidade… navega até o botão
-    // Trajeto por teclado até o botão "Confirmar" para garantir :focus-visible.
-    await sucesso.focus();
-    // Simula que o foco veio por teclado (necessário para :focus-visible em
-    // alguns motores após um focus() programático).
+    // Foco no botão via teclado: usa page.keyboard para garantir :focus-visible
+    // (focus() programático nem sempre satisfaz o heurístico em Chromium).
+    await sucesso.evaluate((el) => (el as HTMLElement).focus({ preventScroll: true }));
     await page.keyboard.press("Shift+Tab");
     await page.keyboard.press("Tab");
     await expect(sucesso).toBeFocused();
     expect(await sucesso.evaluate((el) => el.matches(":focus-visible"))).toBe(true);
-    // Aguarda a transição terminar antes de ler a cor final do outline.
+
+    // Aguarda o fim da transição visual do foco antes de ler a cor final do
+    // outline (a transição de cor pode devolver um valor intermediário).
     await sucesso.evaluate(
       (el) =>
         new Promise<void>((resolve) => {
           const style = getComputedStyle(el);
           const dur = style.transitionDuration
             .split(",")
-            .map((v) => parseFloat(v) * (v.includes("ms") ? 1 : 1000))
+            .map((v) => {
+              const n = parseFloat(v);
+              return v.includes("ms") ? n : n * 1000;
+            })
             .reduce((a, b) => Math.max(a, b), 0);
           setTimeout(resolve, Math.max(dur, 200) + 50);
         }),
     );
-    // teal oficial #0F6B78 => rgb(15, 107, 120), 3px sólido.
-    const outlineColor = await sucesso.evaluate((el) => getComputedStyle(el).outlineColor);
-    const outlineStyle = await sucesso.evaluate((el) => getComputedStyle(el).outlineStyle);
-    const outlineWidth = await sucesso.evaluate((el) => getComputedStyle(el).outlineWidth);
-    expect(outlineColor).toMatch(/rgb\(\s*15\s*,\s*107\s*,\s*120\s*\)/);
-    expect(outlineStyle).toBe("solid");
-    expect(outlineWidth).toBe("3px");
+
+    // Teal oficial #0F6B78 => rgb(15,107,120); contorno sólido de 3 px.
+    await expect
+      .poll(async () => sucesso.evaluate((el) => getComputedStyle(el).outlineColor))
+      .toMatch(/rgb\(\s*15\s*,\s*107\s*,\s*120\s*\)/);
+    expect(await sucesso.evaluate((el) => getComputedStyle(el).outlineStyle)).toBe("solid");
+    expect(await sucesso.evaluate((el) => getComputedStyle(el).outlineWidth)).toBe("3px");
+
+    // Disparo de sucesso via teclado (Enter no botão focado).
+    await page.keyboard.press("Enter");
     await expect(page.getByText(/operação concluída com sucesso\./i)).toBeVisible();
 
     // Disparo de erro.
