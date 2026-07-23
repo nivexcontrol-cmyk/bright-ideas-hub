@@ -67,7 +67,7 @@ export const StatusBadge = React.forwardRef<HTMLSpanElement, StatusBadgeProps>(
         )}
         {...props}
       >
-        <Icon aria-hidden className="h-3.5 w-3.5 shrink-0" />
+        <Icon aria-hidden className={cn("h-3.5 w-3.5 shrink-0", TONE_ICON_CLASSES[tone])} />
         <span className="sr-only">{TONE_PREFIX[tone]}: </span>
         <span>{children}</span>
       </span>
