@@ -118,14 +118,14 @@ describe("Checkbox", () => {
       </label>,
     );
     const cb = screen.getByRole("checkbox");
-    expect(cb).toHaveAttribute("aria-checked", "false");
+    expect(cb.getAttribute("aria-checked")).toBe("false");
 
     await user.click(within(screen.getByTestId("wrap")).getByText(/concordo/i));
-    expect(cb).toHaveAttribute("aria-checked", "true");
+    expect(cb.getAttribute("aria-checked")).toBe("true");
 
     cb.focus();
     await user.keyboard(" ");
-    expect(cb).toHaveAttribute("aria-checked", "false");
+    expect(cb.getAttribute("aria-checked")).toBe("false");
   });
 });
 
@@ -153,16 +153,16 @@ describe("RadioGroup", () => {
     const normal = screen.getByRole("radio", { name: /normal/i });
     const alta = screen.getByRole("radio", { name: /alta/i });
 
-    expect(normal).toHaveAttribute("aria-checked", "true");
+    expect(normal.getAttribute("aria-checked")).toBe("true");
 
     await user.click(screen.getByText(/baixa/i));
-    expect(baixa).toHaveAttribute("aria-checked", "true");
+    expect(baixa.getAttribute("aria-checked")).toBe("true");
 
     baixa.focus();
     await user.keyboard("{ArrowDown}");
-    expect(normal).toHaveAttribute("aria-checked", "true");
+    expect(normal.getAttribute("aria-checked")).toBe("true");
     await user.keyboard("{ArrowDown}");
-    expect(alta).toHaveAttribute("aria-checked", "true");
+    expect(alta.getAttribute("aria-checked")).toBe("true");
   });
 });
 
