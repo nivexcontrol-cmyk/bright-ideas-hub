@@ -380,7 +380,9 @@ test.describe("Vitrine — rota /", () => {
     test(`axe — vitrine completa sem violações em ${vp.width} px`, async ({ page }) => {
       await page.setViewportSize(vp);
       await page.goto("/");
-      await expect(page.getByRole("heading", { level: 2, name: /^tabela de dados$/i })).toBeVisible();
+      await expect(
+        page.getByRole("heading", { level: 2, name: /^tabela de dados$/i }),
+      ).toBeVisible();
       const results = await new AxeBuilder({ page })
         .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"])
         .analyze();
@@ -388,4 +390,3 @@ test.describe("Vitrine — rota /", () => {
     });
   }
 });
-
