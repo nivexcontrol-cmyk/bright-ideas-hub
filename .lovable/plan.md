@@ -40,7 +40,7 @@ Escopo: apenas frontend visual mockado. Sem banco, Supabase, autenticação, API
 - LV-01 — Fundação visual: concluída (tokens, controles, feedback, DataTable, vitrine `/`).
 - LV-02 — Entrada demonstrativa (`/entrar`, Context, mocks, proteção básica, `/app/inicio`).
 - LV-03 — Shell operacional mockado (`/app` completo: cabeçalho, sidebar, barra inferior mobile, `/app/perfil`, `/app/loja`, ação "sair", 404 sob `/app/*`).
-- LV-04 — Catálogo visual (superfícies auxiliares e componentes compartilhados adicionais que os blocos operacionais consumirão).
+- LV-04 — Catálogo visual: começará com microetapa decisória para conciliar a superfície aprovada `/app/rede/produtos` e eventuais sub-rotas ainda pendentes. LV-04 não poderá ser pulada nem reduzida somente a componentes.
 - LV-05 — Recebimento visual (`/app/recebimento`, `/app/recebimento/$recebimentoId`, `/conferencia`, `/divergencias`).
 - LV-06 — Estoque e reposição visual (`/app/loja/estoque`, `/app/reposicao`, `/app/reposicao/$reposicaoId`, `/execucao`).
 - LV-07 — Contagem e aprovações visuais (`/app/contagem`, `/app/contagem/$contagemId`, `/app/supervisao/aprovacoes`).
@@ -65,7 +65,12 @@ Arquivos permitidos (criar/editar apenas estes):
 - `src/routes/entrar.tsx` (novo)
 - `src/routes/app.tsx` (novo — layout do segmento com `<Outlet />`, proteção via `useMockSession()` e `<Navigate to="/entrar" replace />` quando sem cenário ou loja)
 - `src/routes/app.inicio.tsx` (novo)
+- `src/test/contexts/mock-session-context.test.tsx` (novo)
+- `src/test/routes/entrada-inicio.a11y.test.tsx` (novo)
+- `e2e/entrada-inicio.spec.ts` (novo)
 - `src/routeTree.gen.ts` (regenerado pelo build oficial; nunca editado à mão)
+
+Testes existentes permanecem intocados; `e2e/vitrine.spec.ts` não deve ser atualizado.
 
 Não pode alterar: vitrine `/`, componentes visuais existentes, tokens, testes existentes, workflow, `package.json`, locks, dependências.
 
@@ -98,7 +103,7 @@ Arquivos permitidos: `src/routes/entrar.tsx`, componentes visuais internos criad
 
 Critérios de aceite: contraste AA, foco visível 3px, alvos de toque mínimos, leitor de tela anuncia o cenário/loja selecionados, nenhum dado real, nenhuma persistência.
 
-Testes: E2E de acessibilidade e responsividade; Axe sem violações críticas.
+Testes: E2E de acessibilidade e responsividade; Axe com zero violações (regra uniforme em todo o plano).
 
 Auditoria antes da próxima microetapa.
 
