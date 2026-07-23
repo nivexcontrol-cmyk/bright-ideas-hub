@@ -22,6 +22,34 @@ import { EmptyState } from "@/components/feedback/empty-state";
 import { ErrorState } from "@/components/feedback/error-state";
 import { NoPermissionState } from "@/components/feedback/no-permission-state";
 import { LoadingState } from "@/components/feedback/loading-state";
+import { DataTable } from "@/components/data-table/data-table";
+import type { DataTableColumn, DataTableRowAction } from "@/components/data-table/types";
+
+interface TarefaReposicao {
+  id: string;
+  code: string;
+  store: string;
+  responsible: string;
+  situation: string;
+  hour: string;
+}
+
+const tarefasBase: TarefaReposicao[] = Array.from({ length: 20 }, (_, i) => ({
+  id: `tr-${i + 1}`,
+  code: `TR-${String(i + 1).padStart(3, "0")}`,
+  store: `Loja ${String((i % 3) + 1).padStart(3, "0")}`,
+  responsible: ["Ana Souza", "Bruno Lima", "Carla Dias", "Diego Melo"][i % 4],
+  situation: ["Pendente", "Em execução", "Concluído"][i % 3],
+  hour: `${String(8 + (i % 10)).padStart(2, "0")}:${i % 2 === 0 ? "00" : "30"}`,
+}));
+
+const tarefaColunas: DataTableColumn<TarefaReposicao>[] = [
+  { id: "code", header: "Identificação", accessor: (r) => r.code },
+  { id: "store", header: "Loja", accessor: (r) => r.store },
+  { id: "responsible", header: "Responsável", accessor: (r) => r.responsible },
+  { id: "situation", header: "Situação", accessor: (r) => r.situation },
+  { id: "hour", header: "Horário", accessor: (r) => r.hour },
+];
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -505,8 +533,81 @@ function Index() {
           </div>
         </section>
 
+        <section aria-labelledby="sec-tabela" className="mt-10 space-y-6">
+          <h2 id="sec-tabela" className="text-xl font-semibold text-foreground">
+            Tabela de dados
+          </h2>
+          <p className="text-sm text-foreground">
+            Componente reutilizável com busca, ordenação, paginação e ações por linha. No celular
+            substitui a tabela por cards acessíveis.
+          </p>
+
+          <div className="space-y-2">
+            <h3 className="text-base font-semibold text-foreground">Cenário: nenhum registro</h3>
+            <DataTable<TarefaReposicao>
+              caption="Tarefas de reposição (vazio)"
+              columns={tarefaColunas}
+              data={[]}
+              getRowId={(r) => r.id}
+              testIdPrefix="dt-zero"
+              emptyState={
+                <EmptyState
+                  title="Nada por aqui ainda"
+                  description="Não há tarefas de reposição para exibir."
+                />
+              }
+            />
+          </div>
+
+          <div className="space-y-2">
+            <h3 className="text-base font-semibold text-foreground">Cenário: um registro</h3>
+            <DataTable<TarefaReposicao>
+              caption="Tarefas de reposição (um registro)"
+              columns={tarefaColunas}
+              data={tarefasBase.slice(0, 1)}
+              getRowId={(r) => r.id}
+              testIdPrefix="dt-um"
+              rowActions={
+                [
+                  {
+                    id: "ver",
+                    label: (r) => `Ver detalhes de ${r.code}`,
+                    children: "Ver",
+                    onClick: () => toast.success("Registro aberto."),
+                  },
+                ] as DataTableRowAction<TarefaReposicao>[]
+              }
+            />
+          </div>
+
+          <div className="space-y-2">
+            <h3 className="text-base font-semibold text-foreground">
+              Cenário: vinte registros com busca, ordenação e paginação
+            </h3>
+            <DataTable<TarefaReposicao>
+              caption="Tarefas de reposição (vinte registros)"
+              columns={tarefaColunas}
+              data={tarefasBase}
+              getRowId={(r) => r.id}
+              pageSize={5}
+              searchPlaceholder="Buscar por identificação, loja ou responsável…"
+              testIdPrefix="dt-vinte"
+              rowActions={
+                [
+                  {
+                    id: "ver",
+                    label: (r) => `Ver detalhes de ${r.code}`,
+                    children: "Ver",
+                    onClick: (r) => toast.success(`Registro ${r.code} aberto.`),
+                  },
+                ] as DataTableRowAction<TarefaReposicao>[]
+              }
+            />
+          </div>
+        </section>
+
         <footer className="mt-10 text-center text-xs text-foreground">
-          Nivex Control — LV-01.2B.3 — Feedback e comunicação visual
+          Nivex Control — LV-01.2B.4 — Tabela de dados
         </footer>
       </div>
     </main>
