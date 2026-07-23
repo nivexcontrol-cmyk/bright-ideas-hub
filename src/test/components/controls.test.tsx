@@ -1,10 +1,12 @@
 import * as React from "react";
+import { act } from "react";
 import { describe, it, expect, vi, beforeAll } from "vitest";
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { axe } from "jest-axe";
 
 import { Button } from "@/components/ui/button";
+
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -169,8 +171,12 @@ describe("RadioGroup", () => {
     await user.click(screen.getByText(/baixa/i));
     expect(baixa.getAttribute("aria-checked")).toBe("true");
 
-    // Teclado: foca um radio não marcado e confirma seleção com Space.
-    alta.focus();
+    // Teclado: transfere foco para um radio não marcado (envolto em act para
+    // aguardar as atualizações internas do RovingFocusGroup do Radix) e
+    // confirma a seleção com Space via user-event.
+    await act(async () => {
+      alta.focus();
+    });
     await user.keyboard(" ");
     expect(alta.getAttribute("aria-checked")).toBe("true");
   });
