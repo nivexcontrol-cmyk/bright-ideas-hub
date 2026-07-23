@@ -77,7 +77,7 @@ test.describe("Vitrine — rota /", () => {
 
       // Checkbox + rótulo (área composta)
       const cb = page.getByRole("checkbox", { name: /li e concordo/i });
-      const cbLabel = page.locator('label[for="aceite"]');
+      const cbLabel = page.locator('label[for="ctrl-aceite"]');
       const cbHeight = await compositeHeight(page, cb, cbLabel);
       expect(cbHeight).toBeGreaterThanOrEqual(min);
 
