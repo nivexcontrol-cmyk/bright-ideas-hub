@@ -320,12 +320,15 @@ test.describe("Vitrine — rota /", () => {
     await page.goto("/");
     const v = page.getByTestId("dt-vinte-root");
 
-    // Busca real.
+    // Busca real. Usa correspondência exata da célula que contém apenas o código,
+    // sem colidir com a célula de ações cujo botão tem nome "Ver detalhes de TR-002".
     const search = v.getByLabel(/buscar registros/i);
     await search.fill("TR-002");
-    await expect(v.getByRole("cell", { name: "TR-002" })).toBeVisible();
-    await expect(v.getByRole("cell", { name: "TR-001" })).toHaveCount(0);
+    await expect(v.getByRole("cell", { name: "TR-002", exact: true })).toBeVisible();
+    await expect(v.getByRole("cell", { name: "TR-001", exact: true })).toHaveCount(0);
     await search.fill("");
+    // Após limpar a busca, todos os códigos voltam ao DOM.
+    await expect(v.getByRole("cell", { name: "TR-001", exact: true })).toBeVisible();
 
     // Ordenação por teclado no cabeçalho "Identificação".
     const sortBtn = v.getByTestId("dt-vinte-sort-code");
@@ -342,18 +345,19 @@ test.describe("Vitrine — rota /", () => {
     await page.keyboard.press("Enter");
     await expect(headerCode).toHaveAttribute("aria-sort", "none");
 
-    // Paginação: avança e volta.
-    const next = v.getByTestId("dt-vinte-next");
-    const prev = v.getByTestId("dt-vinte-prev");
+    // Paginação: localiza pela navigation acessível e pelos nomes acessíveis dos botões.
+    const pagination = v.getByRole("navigation", { name: /^paginação$/i });
+    const next = pagination.getByRole("button", { name: /^próxima página$/i });
+    const prev = pagination.getByRole("button", { name: /^página anterior$/i });
     await expect(prev).toBeDisabled();
     await next.click();
-    await expect(v.getByTestId("dt-vinte-pagination-info")).toContainText(/página 2 de 4/i);
+    await expect(pagination).toContainText(/página 2 de 4/i);
     await next.click();
     await next.click();
     await expect(next).toBeDisabled();
-    await expect(v.getByTestId("dt-vinte-pagination-info")).toContainText(/página 4 de 4/i);
+    await expect(pagination).toContainText(/página 4 de 4/i);
     await prev.click();
-    await expect(v.getByTestId("dt-vinte-pagination-info")).toContainText(/página 3 de 4/i);
+    await expect(pagination).toContainText(/página 3 de 4/i);
 
     // Ação de linha no cenário "um".
     const um = page.getByTestId("dt-um-root");
