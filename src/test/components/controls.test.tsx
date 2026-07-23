@@ -171,12 +171,17 @@ describe("RadioGroup", () => {
     await user.click(screen.getByText(/baixa/i));
     expect(baixa.getAttribute("aria-checked")).toBe("true");
 
-    // Teclado: foca um radio não marcado e confirma seleção com Space.
-    alta.focus();
+    // Teclado: transfere foco para um radio não marcado (envolto em act para
+    // aguardar as atualizações internas do RovingFocusGroup do Radix) e
+    // confirma a seleção com Space via user-event.
+    await act(async () => {
+      alta.focus();
+    });
     await user.keyboard(" ");
     expect(alta.getAttribute("aria-checked")).toBe("true");
   });
 });
+
 
 describe("Acessibilidade dos controles (jest-axe)", () => {
   it("não apresenta violações axe", async () => {
