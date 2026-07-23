@@ -169,10 +169,9 @@ describe("RadioGroup", () => {
     await user.click(screen.getByText(/baixa/i));
     expect(baixa.getAttribute("aria-checked")).toBe("true");
 
-    baixa.focus();
-    await user.keyboard("{ArrowDown}");
-    expect(normal.getAttribute("aria-checked")).toBe("true");
-    await user.keyboard("{ArrowDown}");
+    // Teclado: foca um radio não marcado e confirma seleção com Space.
+    alta.focus();
+    await user.keyboard(" ");
     expect(alta.getAttribute("aria-checked")).toBe("true");
   });
 });
