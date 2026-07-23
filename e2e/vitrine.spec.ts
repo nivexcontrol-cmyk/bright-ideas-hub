@@ -307,10 +307,12 @@ test.describe("Vitrine — rota /", () => {
     await expect(um.getByRole("row")).toHaveCount(2); // header + 1
 
     // Cenário vinte: paginação e busca.
+    // Localiza pela estrutura acessível real (navigation "Paginação") dentro do DataTable.
     const v = page.getByTestId("dt-vinte-root");
     await expect(v.getByTestId("dt-vinte-table")).toBeVisible();
-    await expect(v.getByTestId("dt-vinte-pagination-info")).toContainText(/20 registros/i);
-    await expect(v.getByTestId("dt-vinte-pagination-info")).toContainText(/página 1 de 4/i);
+    const paginationInit = v.getByRole("navigation", { name: /^paginação$/i });
+    await expect(paginationInit).toContainText(/20 registros/i);
+    await expect(paginationInit).toContainText(/página 1 de 4/i);
   });
 
   test("DataTable — busca, ordenação por teclado, paginação e ação de linha", async ({ page }) => {
