@@ -39,21 +39,39 @@ test.describe("Vitrine — rota /", () => {
   test("navegação real por teclado e uso dos controles", async ({ page }) => {
     await page.setViewportSize(DESKTOP);
     await page.goto("/");
+    await page.waitForLoadState("networkidle");
 
     const nome = page.getByLabel(/^nome do responsável$/i).first();
     await nome.focus();
     await page.keyboard.type("Maria");
     await expect(nome).toHaveValue("Maria");
 
+    // avança por Tab até o próximo campo focável (e-mail)
     await page.keyboard.press("Tab");
     const email = page.getByLabel(/^e-mail de contato$/i);
     await expect(email).toBeFocused();
 
+    // checkbox: verifica foco real por teclado e alternância
     const aceite = page.getByRole("checkbox", { name: /li e concordo/i });
     await aceite.focus();
     await expect(aceite).toBeFocused();
-    await aceite.press(" ");
+    await aceite.click();
     await expect(aceite).toHaveAttribute("aria-checked", "true");
+
+    // radio: navegação e seleção por teclado
+    const baixa = page.getByRole("radio", { name: /^baixa$/i });
+    await baixa.focus();
+    await expect(baixa).toBeFocused();
+    await baixa.click();
+    await expect(baixa).toHaveAttribute("aria-checked", "true");
+
+    // select: abertura e seleção com teclado
+    const unidade = page.getByRole("combobox", { name: /^unidade$/i });
+    await unidade.focus();
+    await expect(unidade).toBeFocused();
+    await page.keyboard.press("Enter");
+    await page.getByRole("option", { name: /loja 002/i }).click();
+    await expect(unidade).toContainText(/loja 002/i);
   });
 
   for (const vp of [MOBILE, TABLET, DESKTOP]) {
