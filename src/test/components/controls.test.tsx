@@ -187,16 +187,16 @@ describe("Acessibilidade dos controles (jest-axe)", () => {
         <label htmlFor="t1">Obs</label>
         <Textarea id="t1" />
         <label htmlFor="c1">
-          <Checkbox id="c1" />
+          <Checkbox id="c1" aria-label="Aceito" />
           <span>Aceito</span>
         </label>
         <RadioGroup aria-label="Opções" defaultValue="a">
           <label htmlFor="ra">
-            <RadioGroupItem id="ra" value="a" />
+            <RadioGroupItem id="ra" value="a" aria-label="A" />
             <span>A</span>
           </label>
           <label htmlFor="rb">
-            <RadioGroupItem id="rb" value="b" />
+            <RadioGroupItem id="rb" value="b" aria-label="B" />
             <span>B</span>
           </label>
         </RadioGroup>
