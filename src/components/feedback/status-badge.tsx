@@ -18,7 +18,10 @@ const TONE_CLASSES: Record<StatusTone, string> = {
   error: "bg-destructive/10 text-destructive border-destructive/40",
 };
 
-const TONE_ICON: Record<StatusTone, React.ComponentType<{ className?: string; "aria-hidden"?: boolean }>> = {
+const TONE_ICON: Record<
+  StatusTone,
+  React.ComponentType<{ className?: string; "aria-hidden"?: boolean }>
+> = {
   info: Info,
   success: CheckCircle2,
   warning: AlertTriangle,

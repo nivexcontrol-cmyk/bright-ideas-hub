@@ -23,10 +23,7 @@ export const LoadingState = React.forwardRef<HTMLDivElement, LoadingStateProps>(
         role="status"
         aria-busy="true"
         aria-live="polite"
-        className={cn(
-          "rounded-[12px] border border-border bg-surface p-4 sm:p-6",
-          className,
-        )}
+        className={cn("rounded-[12px] border border-border bg-surface p-4 sm:p-6", className)}
         {...props}
       >
         <span className="sr-only">{label}</span>

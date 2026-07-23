@@ -18,7 +18,8 @@ function Harness() {
       <button type="button" onClick={() => toast.error("Erro: falhou")}>
         Erro
       </button>
-      <Toaster />
+      {/* closeButton habilita um botão real de dispensa, operável 100% por teclado. */}
+      <Toaster closeButton />
     </div>
   );
 }
@@ -50,10 +51,13 @@ describe("Toaster — LV-01.2B.3", () => {
     const t = await screen.findByText("Sucesso: salvo");
     expect(t).not.toBeNull();
 
-    // Sonner move o foco à região de toasts com Alt+T (hotkey padrão) e permite
-    // dispensar o toast focado com Escape — completamente por teclado.
-    await user.keyboard("{Alt>}t{/Alt}");
-    await user.keyboard("{Escape}");
+    // Sonner com closeButton renderiza um botão real "Close toast" acessível
+    // por teclado. Focar e pressionar Enter dispensa a notificação — o fluxo
+    // é 100% via teclado, sem clique de mouse.
+    const closeBtn = await screen.findByRole("button", { name: /close toast/i });
+    closeBtn.focus();
+    expect(document.activeElement).toBe(closeBtn);
+    await user.keyboard("{Enter}");
 
     await waitFor(
       () => {

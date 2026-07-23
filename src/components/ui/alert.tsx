@@ -44,7 +44,10 @@ const alertVariants = cva(
 type AlertVariant = NonNullable<VariantProps<typeof alertVariants>["variant"]>;
 type LiveMode = "off" | "polite" | "assertive";
 
-const ICONS: Record<AlertVariant, React.ComponentType<{ className?: string; "aria-hidden"?: boolean }>> = {
+const ICONS: Record<
+  AlertVariant,
+  React.ComponentType<{ className?: string; "aria-hidden"?: boolean }>
+> = {
   default: Info,
   info: Info,
   success: CheckCircle2,
@@ -72,8 +75,7 @@ const PREFIX: Record<AlertVariant, string> = {
 };
 
 export interface AlertProps
-  extends Omit<React.HTMLAttributes<HTMLDivElement>, "role">,
-    VariantProps<typeof alertVariants> {
+  extends Omit<React.HTMLAttributes<HTMLDivElement>, "role">, VariantProps<typeof alertVariants> {
   /**
    * "off" para alertas estáticos exibidos no carregamento inicial.
    * "polite" ou "assertive" para alertas dinâmicos.
