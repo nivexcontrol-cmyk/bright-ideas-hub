@@ -535,10 +535,84 @@ function Index() {
           </div>
         </section>
 
+        <section aria-labelledby="sec-tabela" className="mt-10 space-y-6">
+          <h2 id="sec-tabela" className="text-xl font-semibold text-foreground">
+            Tabela de dados
+          </h2>
+          <p className="text-sm text-foreground">
+            Componente reutilizável com busca, ordenação, paginação e ações por linha. No celular
+            substitui a tabela por cards acessíveis.
+          </p>
+
+          <div className="space-y-2">
+            <h3 className="text-base font-semibold text-foreground">Cenário: nenhum registro</h3>
+            <DataTable<TarefaReposicao>
+              caption="Tarefas de reposição (vazio)"
+              columns={tarefaColunas}
+              data={[]}
+              getRowId={(r) => r.id}
+              testIdPrefix="dt-zero"
+              emptyState={
+                <EmptyState
+                  title="Nada por aqui ainda"
+                  description="Não há tarefas de reposição para exibir."
+                />
+              }
+            />
+          </div>
+
+          <div className="space-y-2">
+            <h3 className="text-base font-semibold text-foreground">Cenário: um registro</h3>
+            <DataTable<TarefaReposicao>
+              caption="Tarefas de reposição (um registro)"
+              columns={tarefaColunas}
+              data={tarefasBase.slice(0, 1)}
+              getRowId={(r) => r.id}
+              testIdPrefix="dt-um"
+              rowActions={
+                [
+                  {
+                    id: "ver",
+                    label: (r) => `Ver detalhes de ${r.code}`,
+                    children: "Ver",
+                    onClick: () => toast.success("Registro aberto."),
+                  },
+                ] as DataTableRowAction<TarefaReposicao>[]
+              }
+            />
+          </div>
+
+          <div className="space-y-2">
+            <h3 className="text-base font-semibold text-foreground">
+              Cenário: vinte registros com busca, ordenação e paginação
+            </h3>
+            <DataTable<TarefaReposicao>
+              caption="Tarefas de reposição (vinte registros)"
+              columns={tarefaColunas}
+              data={tarefasBase}
+              getRowId={(r) => r.id}
+              pageSize={5}
+              searchPlaceholder="Buscar por identificação, loja ou responsável…"
+              testIdPrefix="dt-vinte"
+              rowActions={
+                [
+                  {
+                    id: "ver",
+                    label: (r) => `Ver detalhes de ${r.code}`,
+                    children: "Ver",
+                    onClick: (r) => toast.success(`Registro ${r.code} aberto.`),
+                  },
+                ] as DataTableRowAction<TarefaReposicao>[]
+              }
+            />
+          </div>
+        </section>
+
         <footer className="mt-10 text-center text-xs text-foreground">
-          Nivex Control — LV-01.2B.3 — Feedback e comunicação visual
+          Nivex Control — LV-01.2B.4 — Tabela de dados
         </footer>
       </div>
     </main>
   );
 }
+
