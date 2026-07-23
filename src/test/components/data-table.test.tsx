@@ -84,19 +84,19 @@ const renderTable = (rows: Task[], actions?: DataTableRowAction<Task>[]) =>
 describe("DataTable — renderização", () => {
   it("renderiza estado vazio quando não há registros", () => {
     renderTable([]);
-    expect(screen.getByText(/nada por aqui/i)).toBeInTheDocument();
+    expect(screen.getByText(/nada por aqui/i)).not.toBeNull();
     expect(screen.queryByRole("table")).toBeNull();
   });
 
   it("renderiza um único registro em modo tabela", () => {
     renderTable(mkRows(1));
-    expect(screen.getByRole("table")).toBeInTheDocument();
-    expect(screen.getByText("T-001")).toBeInTheDocument();
+    expect(screen.getByRole("table")).not.toBeNull();
+    expect(screen.getByText("T-001")).not.toBeNull();
   });
 
   it("renderiza vinte registros paginando em 5 por página", () => {
     renderTable(mkRows(20));
-    expect(screen.getByRole("table")).toBeInTheDocument();
+    expect(screen.getByRole("table")).not.toBeNull();
     expect(screen.getByTestId("dt-pagination-info").textContent).toMatch(/20 registros/i);
     expect(screen.getByTestId("dt-pagination-info").textContent).toMatch(/página 1 de 4/i);
   });
@@ -108,10 +108,10 @@ describe("DataTable — busca", () => {
     renderTable(mkRows(20));
     const search = screen.getByLabelText(/buscar registros/i);
     await user.type(search, "T-002");
-    expect(screen.getByText("T-002")).toBeInTheDocument();
+    expect(screen.getByText("T-002")).not.toBeNull();
     expect(screen.queryByText("T-001")).toBeNull();
     await user.clear(search);
-    expect(screen.getByText("T-001")).toBeInTheDocument();
+    expect(screen.getByText("T-001")).not.toBeNull();
   });
 });
 
@@ -189,7 +189,7 @@ describe("DataTable — modo mobile", () => {
     setViewport(360);
     renderTable(mkRows(3));
     expect(screen.queryByRole("table")).toBeNull();
-    expect(screen.getByTestId("dt-cards")).toBeInTheDocument();
+    expect(screen.getByTestId("dt-cards")).not.toBeNull();
     // rótulos preservados
     expect(screen.getAllByText(/identificação/i).length).toBeGreaterThan(0);
     expect(screen.getAllByText(/responsável/i).length).toBeGreaterThan(0);
