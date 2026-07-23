@@ -13,7 +13,11 @@ export type StatusTone = "info" | "success" | "warning" | "error";
 
 const TONE_CLASSES: Record<StatusTone, string> = {
   info: "bg-info/10 text-info border-info/40",
-  success: "bg-success/10 text-success border-success/40",
+  // Sucesso: mantém verde oficial na borda e no ícone, mas usa o token
+  // oficial --foreground (#1f2937) no rótulo para garantir contraste ≥ 4,5:1
+  // sobre o fundo #EAF2EA gerado por bg-success/10 (o par #2E7D32 sobre
+  // #EAF2EA rende apenas 4,48:1).
+  success: "bg-success/10 text-foreground border-success/40",
   warning: "bg-warning/10 text-foreground border-warning/40",
   error: "bg-destructive/10 text-destructive border-destructive/40",
 };
@@ -26,6 +30,15 @@ const TONE_ICON: Record<
   success: CheckCircle2,
   warning: AlertTriangle,
   error: XCircle,
+};
+
+// Ícones mantêm a cor oficial da tonalidade mesmo quando o rótulo usa outro
+// token (caso do sucesso, cujo texto usa --foreground para contraste AA).
+const TONE_ICON_CLASSES: Record<StatusTone, string> = {
+  info: "text-info",
+  success: "text-success",
+  warning: "text-warning",
+  error: "text-destructive",
 };
 
 const TONE_PREFIX: Record<StatusTone, string> = {
@@ -54,7 +67,7 @@ export const StatusBadge = React.forwardRef<HTMLSpanElement, StatusBadgeProps>(
         )}
         {...props}
       >
-        <Icon aria-hidden className="h-3.5 w-3.5 shrink-0" />
+        <Icon aria-hidden className={cn("h-3.5 w-3.5 shrink-0", TONE_ICON_CLASSES[tone])} />
         <span className="sr-only">{TONE_PREFIX[tone]}: </span>
         <span>{children}</span>
       </span>
