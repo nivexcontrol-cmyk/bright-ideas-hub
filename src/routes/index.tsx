@@ -51,8 +51,6 @@ const tarefaColunas: DataTableColumn<TarefaReposicao>[] = [
   { id: "hour", header: "Horário", accessor: (r) => r.hour },
 ];
 
-
-
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
@@ -615,4 +613,3 @@ function Index() {
     </main>
   );
 }
-

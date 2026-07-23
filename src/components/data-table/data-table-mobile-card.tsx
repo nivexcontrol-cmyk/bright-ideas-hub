@@ -9,11 +9,7 @@ export interface DataTableMobileCardProps<T> {
   rowActions?: DataTableRowAction<T>[];
 }
 
-export function DataTableMobileCard<T>({
-  row,
-  columns,
-  rowActions,
-}: DataTableMobileCardProps<T>) {
+export function DataTableMobileCard<T>({ row, columns, rowActions }: DataTableMobileCardProps<T>) {
   return (
     <article className="rounded-[12px] border border-border bg-surface p-4 shadow-sm">
       <dl className="grid grid-cols-1 gap-2">
