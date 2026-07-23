@@ -107,8 +107,8 @@ test.describe("Vitrine — rota /", () => {
     expect(await aceite.evaluate((el) => el.matches(":focus-visible"))).toBe(true);
   });
 
-
   for (const vp of [MOBILE, TABLET, DESKTOP]) {
+
     const min = vp.width <= 360 ? 48 : 44;
     test(`controles, checkbox+rótulo e rádios+rótulo atingem ${min} px em ${vp.width}px`, async ({
       page,
