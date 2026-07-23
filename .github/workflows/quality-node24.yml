@@ -54,13 +54,31 @@ jobs:
       - name: E2E (Chromium)
         run: npm run e2e
 
-      - name: Build
+      - name: Snapshot routeTree.gen.ts (pre-build)
+        run: cp src/routeTree.gen.ts /tmp/routeTree.baseline.ts
+
+      - name: Build (1st pass)
         run: npm run build
 
-      - name: Verify routeTree.gen.ts is stable
+      - name: Build (2nd pass)
+        run: npm run build
+
+      - name: Verify routeTree.gen.ts is stable after two consecutive builds
         run: |
+          if ! diff -u /tmp/routeTree.baseline.ts src/routeTree.gen.ts; then
+            echo "::error::src/routeTree.gen.ts changed after running the build twice. The generator output is unstable relative to the committed file."
+            exit 1
+          fi
           if [ -n "$(git status --porcelain src/routeTree.gen.ts)" ]; then
-            echo "src/routeTree.gen.ts foi modificado pelo build"
+            echo "::error::src/routeTree.gen.ts has uncommitted changes after the build."
             git --no-pager diff src/routeTree.gen.ts
             exit 1
           fi
+          echo "src/routeTree.gen.ts is stable across two consecutive builds."
+
+      - name: Production dependency audit (fail on high+)
+        run: npm audit --omit=dev --audit-level=high
+
+      - name: Development dependency audit (report only)
+        if: always()
+        run: npm audit || true
