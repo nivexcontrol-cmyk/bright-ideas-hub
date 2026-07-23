@@ -210,11 +210,14 @@ test.describe("Vitrine — rota /", () => {
       await expect(page.getByText(t).first()).toBeVisible();
     }
 
-    // Estados.
-    await expect(page.getByText(/nada por aqui ainda/i)).toBeVisible();
-    await expect(page.getByText(/não foi possível carregar/i)).toBeVisible();
-    await expect(page.getByText(/acesso indisponível/i)).toBeVisible();
-    await expect(page.locator('[aria-busy="true"]')).toBeVisible();
+    // Estados. Escopa ao region "Feedback" para desambiguar do EmptyState do DataTable.
+    const feedbackRegion = page.getByRole("region", { name: /^feedback$/i });
+    await expect(
+      feedbackRegion.getByRole("heading", { level: 3, name: /^nada por aqui ainda$/i }),
+    ).toBeVisible();
+    await expect(feedbackRegion.getByText(/não foi possível carregar/i)).toBeVisible();
+    await expect(feedbackRegion.getByText(/acesso indisponível/i)).toBeVisible();
+    await expect(feedbackRegion.locator('[aria-busy="true"]')).toBeVisible();
 
     // Sem violações axe na página completa.
     const results = await new AxeBuilder({ page })
