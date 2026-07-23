@@ -1,199 +1,214 @@
-# LV-01.3A — Auditoria e planejamento das primeiras rotas reais
+# Plano consolidado — Nivex Control (visual, mockado)
 
-Microetapa exclusivamente de análise. Nenhum arquivo será alterado. Banco, Supabase, autenticação real, API, integrações, armazenamento, e-mail, pagamentos e webhooks permanecem proibidos até o final do projeto (confirmação explícita no item 16).
-
----
-
-## 1. Inventário das rotas já existentes
-
-Somente duas rotas físicas em `src/routes/`:
-
-- `__root.tsx` — shell HTML, `<QueryClientProvider>`, `Toaster`, `NotFoundComponent`, `ErrorComponent`, metadados OG/Twitter.
-- `index.tsx` — vitrine visual concluída (LV-01.2B.1 → LV-01.2B.4), 615 linhas, exibe tokens, controles, feedback e DataTable.
-
-`routeTree.gen.ts` reflete apenas `/` (69 linhas, hash aprovado em LV-01.2B.4.3).
-
-Nenhuma outra rota de aplicação existe. Nenhum shell operacional, nenhum layout autenticado, nenhum menu.
-
-## 2. Mapa das rotas visuais previstas pela documentação, por perfil
-
-Derivado de LV-00A.2.1 (permissões e escopos), LV-00A.2.2.1–2.2.8 (modelo canônico) e da ordem funcional aprovada. Todas as rotas abaixo são **visuais e mockadas**; nenhuma toca banco.
-
-### Estrutura comum (não é perfil, é chassi)
-- `/entrada` — tela visual de entrada (simulação de login, sem autenticação).
-- `/app` — layout raiz operacional (shell responsivo, cabeçalho, menu lateral desktop, navegação inferior mobile, chip de perfil + loja, seletor simulado de acesso).
-- `/app/inicio` — hub inicial pós-entrada.
-- `/app/perfil` — identificação visual do usuário simulado.
-- `/app/loja` — identificação visual da loja simulada e troca de escopo.
-
-### Bloco 2 — Recebimento de mercadorias (perfil: recebedor)
-- `/app/recebimento` — lista de recebimentos pendentes.
-- `/app/recebimento/$id` — detalhe do recebimento.
-- `/app/recebimento/$id/conferencia` — conferência item a item.
-- `/app/recebimento/$id/divergencias` — registro de divergências e evidências (mock).
-
-### Bloco 3 — Repositor (perfil: repositor)
-- `/app/reposicao` — fila de tarefas do repositor.
-- `/app/reposicao/$id` — detalhe da tarefa (`task_pick_lines` conforme LV-00A.2.2.3).
-- `/app/reposicao/$id/execucao` — execução guiada da tarefa.
-- `/app/contagem` — sessões de contagem de prateleira (`shelf_count_sessions`, LV-00A.2.2.4).
-- `/app/contagem/$id` — contagem em andamento.
-
-### Bloco 4 — Supervisão e gestão da loja (perfil: supervisor/gerente de loja)
-- `/app/supervisao` — painel de supervisão.
-- `/app/supervisao/tarefas` — todas as tarefas da loja.
-- `/app/supervisao/equipe` — designações (`task_assignments`).
-- `/app/supervisao/aprovacoes` — limites de aprovação (`approval_limits`).
-- `/app/loja/estoque` — saldos derivados (`stock_balances`).
-
-### Bloco 5 — Gestão de rede e organização (perfil: gestor de rede)
-- `/app/rede` — visão consolidada multi-loja.
-- `/app/rede/lojas` — cadastro de lojas.
-- `/app/rede/produtos` — catálogo, `product_codes`, `presentation_uses`, `conversion_rules`.
-- `/app/rede/fornecedores` — fornecedores e `supplier_products`.
-- `/app/rede/pessoas` — `profiles` + `membership_store_scopes`.
-
-### Bloco 6 — Administração, suporte e integrações (perfil: admin plataforma) — apenas ao final
-- `/app/admin/permissoes` — `role_permissions`.
-- `/app/admin/dispositivos` — `device_authorizations`.
-- `/app/admin/suporte` — `support_access_grants` (JIT).
-- `/app/admin/integracoes` — `integration_inbox` + `integration_attempts`.
-- `/app/admin/operacoes` — `operation_requests` (idempotência).
-
-## 3. Rotas ainda não confirmadas documentalmente (pendências)
-
-Marcadas como pendência conforme regra do enunciado — não decidir sozinho.
-
-- P-01: A tela de entrada exige seletor de perfil simulado ou apenas botão "entrar como demo"? (LV-00A.2.1 não descreve UI de entrada.)
-- P-02: `/app/inicio` deve variar por perfil ou ser único com blocos condicionais? Sem decisão registrada.
-- P-03: Evidências (LV-00A.2.2.1, `evidences`) têm rota própria ou vivem embutidas em recebimento/reposição? Documentação silencia.
-- P-04: `replenishment_destinations` (LV-00A.2.2.2) precisa de tela de manutenção ou é apenas leitura em `/app/reposicao/$id`?
-- P-05: Bloco 6 exige rota para `integration_attempts` separada de `integration_inbox`?
-- P-06: Escopo por loja tem UI de troca no cabeçalho ou apenas em `/app/loja`?
-
-Cada pendência será resolvida em microetapa de decisão (padrão LV-00A) antes da implementação do bloco correspondente.
-
-## 4. Primeira tela real a implementar
-
-**`/entrada`** — tela visual de entrada, simulada, sem autenticação. Justificativa: é o ponto de partida funcional do produto, não conflita com `/` (vitrine), e permite validar em seguida o shell `/app` sem depender de nenhum outro bloco.
-
-## 5. Ordem dos blocos visuais
-
-1. Estrutura comum (entrada + shell `/app` + hub + perfil/loja simulados).
-2. Recebimento de mercadorias.
-3. Repositor.
-4. Supervisão e gestão da loja.
-5. Gestão da rede e organização.
-6. Administração, suporte e integrações.
-
-Auditoria completa obrigatória entre blocos (lint, typecheck, testes, E2E, axe, build) antes de avançar.
-
-## 6. Divisão de cada bloco em microetapas
-
-### Bloco 1 — Estrutura comum (≈8 microetapas)
-- LV-01.3B.1 — Rota `/entrada` visual.
-- LV-01.3B.2 — Layout `_app` (pathless) + `<Outlet />` + guarda simulada.
-- LV-01.3B.3 — Cabeçalho `/app` (logo, chip de perfil, chip de loja).
-- LV-01.3B.4 — Menu lateral desktop (shadcn sidebar).
-- LV-01.3B.5 — Navegação inferior mobile.
-- LV-01.3B.6 — `/app/inicio` hub.
-- LV-01.3B.7 — `/app/perfil` e `/app/loja` simulados + troca de escopo mock.
-- LV-01.3B.8 — Auditoria consolidada do bloco 1.
-
-### Bloco 2 — Recebimento (≈6 microetapas)
-Lista, detalhe, conferência, divergências, estados vazios/erro, auditoria.
-
-### Bloco 3 — Repositor (≈7 microetapas)
-Fila, detalhe, execução, contagem lista, contagem detalhe, mobile-first check, auditoria.
-
-### Bloco 4 — Supervisão (≈6 microetapas)
-Painel, tarefas, equipe, aprovações, estoque derivado, auditoria.
-
-### Bloco 5 — Rede (≈7 microetapas)
-Visão consolidada, lojas, produtos, fornecedores, pessoas, tratamento de listas grandes com DataTable, auditoria.
-
-### Bloco 6 — Admin (≈6 microetapas)
-Permissões, dispositivos, suporte JIT, integrações inbox, integrações attempts, operações idempotentes + auditoria final.
-
-## 7. Estimativa total
-
-Aproximadamente **40 microetapas visuais** (8 + 6 + 7 + 6 + 7 + 6), sem contar erratas e correções localizadas.
-
-## 8. Arquivos criados/alterados na primeira implementação (LV-01.3B.1 — `/entrada`)
-
-Criar:
-- `src/routes/entrada.tsx`
-- `src/mocks/session.ts` (perfis simulados)
-- `src/test/routes/entrada.test.tsx`
-- Bloco novo em `e2e/vitrine.spec.ts` OU novo `e2e/entrada.spec.ts` (a decidir na microetapa).
-
-Alterar (mínimo):
-- `src/routeTree.gen.ts` — apenas via regeneração oficial do TanStack.
-
-Não alterar: `src/routes/index.tsx` (vitrine intocada), `__root.tsx` (apenas se metadados de entrada exigirem, o que será decisão explícita), `styles.css`, componentes UI, `package.json`, workflow, locks.
-
-## 9. Componentes existentes reutilizados
-
-- `Button`, `Input`, `Label`, `Card`, `Select`, `RadioGroup` (LV-01.2B.2).
-- `Alert`, `StatusBadge`, `EmptyState`, `ErrorState`, `LoadingState`, `NoPermissionState`, `Toaster` (LV-01.2B.3).
-- `DataTable` + `DataTableMobileCard` + toolbar/pagination (LV-01.2B.4).
-- `FormField` (LV-01.2B.2).
-- Tokens semânticos de `src/styles.css`.
-
-Componentes shadcn ainda não usados que passarão a ser usados no bloco 1: `sidebar`, `sheet` (drawer mobile), `avatar`, `dropdown-menu`, `separator`, `tabs`.
-
-## 10. Dados mockados necessários (bloco 1)
-
-- `src/mocks/session.ts` — 3 perfis simulados (repositor, supervisor, gestor de rede) com `profile`, `store`, `role_permissions` reduzidos.
-- `src/mocks/stores.ts` — 2 a 3 lojas fictícias.
-- Nenhuma persistência: estado em memória via Zustand leve **ou** `useState` no layout; decisão será tomada na LV-01.3B.2.
-
-## 11. Fluxos entre telas e ações simuladas
-
-1. `/` (vitrine) permanece isolada e acessível.
-2. Usuário abre `/entrada` → escolhe perfil demo → navega para `/app/inicio`.
-3. Cabeçalho exibe chip de perfil e chip de loja; clicar em qualquer chip navega para `/app/perfil` ou `/app/loja`.
-4. Menu lateral (desktop) e barra inferior (mobile) navegam entre `/app/inicio`, `/app/recebimento`, `/app/reposicao`, etc. Rotas ainda não implementadas exibem `EmptyState` "Em breve".
-5. Ação "sair" retorna a `/entrada` limpando o mock de sessão.
-
-## 12. Comportamento desktop e mobile
-
-- Desktop (≥1024px): sidebar fixa à esquerda, cabeçalho superior, conteúdo com `max-width` controlado.
-- Tablet (768–1023px): sidebar colapsável via `SidebarTrigger`.
-- Mobile (<768px): sidebar em `Sheet`/drawer, barra de navegação inferior com 4–5 destinos principais, DataTable no modo cards (já implementado).
-- Toques ≥44px, foco visível 3px (padrão validado em LV-01.2B.3).
-
-## 13. Critérios de aceite e testes por microetapa
-
-Para cada microetapa visual:
-- Renderização correta em desktop e mobile.
-- Teste comportamental Vitest cobrindo interações principais.
-- Teste `jest-axe` sem violações.
-- E2E Playwright do fluxo mínimo da rota (navegação + ação principal).
-- `lint`, `typecheck`, `test`, `test:a11y`, `e2e`, `build` verdes.
-- `src/routeTree.gen.ts` regenerado somente pelo TanStack.
-- Estabilidade do routeTree confirmada com 3 builds consecutivos quando houver nova rota.
-
-## 14. Riscos de conflito com a documentação
-
-- R-01: Adotar rota `/app/*` sem confirmar prefixo pode conflitar com decisão futura sobre múltiplos apps. Mitigação: registrar decisão em LV-01.3B.2.
-- R-02: Simulação de perfil sem tabela `role_permissions` real pode divergir do modelo canônico. Mitigação: mock espelha nomes canônicos LV-00A.2.2.1.
-- R-03: `/app/loja` como troca de escopo pode colidir com pendência P-06.
-- R-04: Uso de sidebar shadcn requer `SidebarProvider` no layout — não pode vazar para `/` (vitrine).
-- R-05: Metadados OG em rotas internas podem duplicar `og:image` do root; usar `head()` por rota.
-
-## 15. Estratégia para preservar `/` como vitrine
-
-- `/` continua servida por `src/routes/index.tsx` sem alterações.
-- Toda a aplicação operacional vive sob prefixo `/app/*` com layout próprio (`src/routes/_app.tsx` pathless, ou `src/routes/app.tsx`; escolha final na LV-01.3B.2).
-- `/entrada` é rota irmã de `/`, sem layout compartilhado com a vitrine nem com o app.
-- `__root.tsx` permanece neutro — não recebe sidebar, header ou provider de sessão. Esses vivem exclusivamente no layout `_app`.
-- Nenhum componente da vitrine importa mocks de sessão; nenhum componente do app importa a vitrine.
-
-## 16. Confirmação explícita
-
-Banco de dados, Supabase, autenticação real, API externa, integrações, armazenamento, e-mail, pagamentos e webhooks **permanecem proibidos** durante todos os blocos visuais 1 a 6. Serão tratados exclusivamente após a conclusão e auditoria de toda a superfície visual mockada, em fase própria fora do escopo LV-01.3.
+Versão: LV-01.3A.5 (consolidação final do plano visual)
+Escopo: apenas frontend visual mockado. Sem banco, Supabase, autenticação, APIs externas, integrações, armazenamento, e-mail, pagamentos ou webhooks.
 
 ---
 
-Plano completo apresentado para auditoria. Não avanço para LV-01.3B.
+## 1. Princípios invioláveis
+
+1. Rota canônica de entrada: `/entrar` (nunca `/entrada`).
+2. Prefixo operacional canônico: `/app`.
+3. Layout do segmento `/app`: `src/routes/app.tsx` com `<Outlet />` (nunca `_app.tsx` pathless).
+4. Sessão simulada exclusivamente em React Context no arquivo `src/contexts/mock-session-context.tsx`.
+5. Provider montado em `src/routes/__root.tsx`.
+6. Proibidos: Zustand, `localStorage`, `sessionStorage`, cookies e qualquer persistência. Recarregar apaga o estado.
+7. Apenas os quatro cenários demonstrativos aprovados:
+   - Recebimento;
+   - Reposição e contagem;
+   - Supervisão da loja;
+   - Gestão da rede.
+   Cenários são demonstrativos e não concedem autorização real; a lista canônica dos 14 papéis do Nivex Control permanece fora do escopo mock.
+8. Apenas as três lojas fictícias aprovadas:
+   - `LOJA-001 — Unidade Centro — Curitiba/PR`;
+   - `LOJA-002 — Unidade Norte — Londrina/PR`;
+   - `LOJA-003 — Unidade Sul — Maringá/PR`.
+   Pertencem conceitualmente a uma "Rede Demonstração"; Nivex Control é o nome do sistema, não da rede varejista.
+9. Sem placeholders, sem links quebrados, sem itens desabilitados, sem rótulos "Em breve". Cada rota entra no menu apenas na microetapa que a cria.
+10. `presentation_uses` é conceito documental de snapshot: não vira entidade, tabela, rota ou tela.
+11. `/app/supervisao/aprovacoes` representa `approvals` (solicitações/decisões reais). `approval_limits` permanece pendente e não faz parte do bloco atual.
+12. Não inventar papéis: `platform_admin` e "recebedor" não são papéis canônicos confirmados nesta fase.
+13. Suporte JIT (`support_access_grants`) permanece como fluxo exclusivo e separado da administração comum.
+14. Menu do primeiro bloco operacional contém somente: `/app/inicio`, `/app/perfil`, `/app/loja`.
+15. `/app/loja/estoque` fica para etapa futura, não pertence ao bloco 1.
+16. A vitrine `/` é preservada integralmente, sem novas seções, sem regressões visuais e sem depender do Context de sessão mock.
+
+---
+
+## 2. Organização oficial das fases
+
+- LV-01 — Fundação visual: concluída (tokens, controles, feedback, DataTable, vitrine `/`).
+- LV-02 — Entrada demonstrativa (`/entrar`, Context, mocks, proteção básica, `/app/inicio`).
+- LV-03 — Shell operacional mockado (`/app` completo: cabeçalho, sidebar, barra inferior mobile, `/app/perfil`, `/app/loja`, ação "sair", 404 sob `/app/*`).
+- LV-04 — Catálogo visual (superfícies auxiliares e componentes compartilhados adicionais que os blocos operacionais consumirão).
+- LV-05 — Recebimento visual (`/app/recebimento`, `/app/recebimento/$recebimentoId`, `/conferencia`, `/divergencias`).
+- LV-06 — Estoque e reposição visual (`/app/loja/estoque`, `/app/reposicao`, `/app/reposicao/$reposicaoId`, `/execucao`).
+- LV-07 — Contagem e aprovações visuais (`/app/contagem`, `/app/contagem/$contagemId`, `/app/supervisao/aprovacoes`).
+- LV-08 — Gestão, rede e administração visual (`/app/supervisao/*`, `/app/rede/*`, `/app/admin/*`, incluindo suporte JIT em fluxo próprio).
+- Banco de dados, Supabase, autenticação real, RLS, edge functions e integrações: somente após aprovação integral de todos os protótipos visuais (LV-02 a LV-08).
+
+---
+
+## 3. LV-02 — Entrada demonstrativa
+
+Objetivo do bloco: fazer surgir visualmente `/entrar`, o Context de sessão mock, os mocks de cenários e lojas, a proteção básica de `/app`, o destino real `/app/inicio` e a navegação funcional entre entrada e início. Nada além disso.
+
+### LV-02.1 — Fluxo vertical mínimo entrada → início
+
+Objetivo único: entregar o menor fluxo vertical funcional entre `/entrar` e `/app/inicio`, usando exclusivamente Context em memória.
+
+Arquivos permitidos (criar/editar apenas estes):
+- `src/contexts/mock-session-context.tsx` (novo)
+- `src/mocks/scenarios.ts` (novo) — quatro cenários aprovados
+- `src/mocks/stores.ts` (novo) — três lojas aprovadas
+- `src/routes/__root.tsx` (editar apenas para montar o Provider; preservar `<Outlet />`, head, tokens e vitrine)
+- `src/routes/entrar.tsx` (novo)
+- `src/routes/app.tsx` (novo — layout do segmento com `<Outlet />`, proteção via `useMockSession()` e `<Navigate to="/entrar" replace />` quando sem cenário ou loja)
+- `src/routes/app.inicio.tsx` (novo)
+- `src/routeTree.gen.ts` (regenerado pelo build oficial; nunca editado à mão)
+
+Não pode alterar: vitrine `/`, componentes visuais existentes, tokens, testes existentes, workflow, `package.json`, locks, dependências.
+
+Critérios de aceite:
+- `/` continua idêntica em conteúdo, layout e testes.
+- `/entrar` renderiza os quatro cards de cenários e o seletor das três lojas; botão de entrada habilita apenas com ambos selecionados; navegação por teclado; foco visível teal 3px; WCAG 2.2 AA.
+- Confirmar seleção em `/entrar` grava cenário + loja no Context e navega para `/app/inicio` (nunca antes).
+- `/app/*` sem sessão redireciona para `/entrar` via componente de `src/routes/app.tsx` (sem `beforeLoad` lendo Context; sem flash do shell).
+- `/entrar` com sessão ativa redireciona para `/app/inicio`.
+- `/app/inicio` mostra o Bloco 1 (boas-vindas contextual com cenário + loja ativos). O Bloco 2 "Acessos disponíveis" não é renderizado enquanto `/app/inicio` for o único destino existente — sem `EmptyState`, sem mensagem substituta.
+- Recarregar `/app/*` apaga a sessão (sem persistência) e cai em `/entrar`.
+- Menu ainda não existe nesta microetapa (fica em LV-03); a navegação de LV-02.1 se dá por: cards em `/entrar` → botão confirmar → `/app/inicio`.
+
+Testes:
+- Vitest: reducer/helpers do Context (definir cenário, definir loja, limpar sessão).
+- E2E Playwright (keyboard-only): fluxo `/entrar` → seleção cenário → seleção loja → confirmar → `/app/inicio` → recarregar → volta para `/entrar`.
+- Axe: `/entrar` e `/app/inicio` sem violações críticas.
+- Build oficial (Node 24, npm 11.18.0) regenera `src/routeTree.gen.ts` de forma estável.
+
+Auditoria antes da próxima microetapa: parar, apresentar diffs e resultados; nenhuma etapa posterior começa sem aprovação.
+
+### LV-02.2 — Refinamento de `/entrar`
+
+Objetivo único: consolidar mensagens acessíveis, descrições dos cenários, layout responsivo (grade desktop / coluna mobile) e mensagem clara de ambiente de demonstração.
+
+Arquivos permitidos: `src/routes/entrar.tsx`, componentes visuais internos criados exclusivamente para esta tela, mocks aprovados.
+
+Critérios de aceite: contraste AA, foco visível 3px, alvos de toque mínimos, leitor de tela anuncia o cenário/loja selecionados, nenhum dado real, nenhuma persistência.
+
+Testes: E2E de acessibilidade e responsividade; Axe sem violações críticas.
+
+Auditoria antes da próxima microetapa.
+
+---
+
+## 4. LV-03 — Shell operacional mockado
+
+Objetivo do bloco: implementar o shell `/app` completo conforme Decisão 4 de LV-01.3A.4, mais `/app/perfil`, `/app/loja` e a ação "sair".
+
+### LV-03.1 — Cabeçalho e chips do shell
+Objetivo único: cabeçalho com marca "Nivex Control", chip do cenário ativo, chip da loja ativa e slot da ação "sair" (ainda inerte).
+Arquivos permitidos: `src/routes/app.tsx`, componentes de cabeçalho do shell.
+Critérios: chips atualizam ao trocar sessão; WCAG AA; sem alterar `/entrar` ou `/app/inicio`.
+Testes: unit dos componentes de cabeçalho; E2E verifica chips.
+Auditoria antes da próxima microetapa.
+
+### LV-03.2 — Sidebar desktop/tablet
+Objetivo único: sidebar colapsável com apenas três itens (`/app/inicio`, `/app/perfil`, `/app/loja`) — nada além.
+Arquivos permitidos: componentes de sidebar do shell, `src/routes/app.tsx`.
+Critérios: nenhum link quebrado; nenhum item desabilitado; nenhum "Em breve"; `SidebarTrigger` acessível em tablet.
+Testes: unit da lista de itens; E2E de navegação por teclado.
+Auditoria antes da próxima microetapa.
+
+### LV-03.3 — Barra inferior mobile
+Objetivo único: barra fixa mobile com até quatro itens; nesta fase apenas os três itens existentes.
+Arquivos permitidos: componente de barra inferior, `src/routes/app.tsx`.
+Critérios: alvos de toque mínimos; foco visível; sem placeholders.
+Testes: E2E mobile viewport.
+Auditoria antes da próxima microetapa.
+
+### LV-03.4 — `/app/perfil` (somente leitura)
+Objetivo único: superfície somente leitura exibindo identificação do usuário simulado (nome fictício), cenário demonstrativo ativo e loja ativa. Sem formulários, sem campos desabilitados, sem ações administrativas.
+Arquivos permitidos: `src/routes/app.perfil.tsx`, mocks.
+Critérios: WCAG AA; leitor de tela anuncia identificação.
+Testes: unit + Axe.
+Auditoria antes da próxima microetapa.
+
+### LV-03.5 — `/app/loja` (troca de loja em memória)
+Objetivo único: permitir trocar a loja fictícia ativa dentre `LOJA-001`, `LOJA-002`, `LOJA-003`. A loja ativa fica claramente marcada; a troca atualiza imediatamente o chip da loja no cabeçalho; funciona por teclado e leitor de tela; sem persistência.
+Arquivos permitidos: `src/routes/app.loja.tsx`, ações no Context.
+Critérios: nenhum efeito administrativo; nenhum banco.
+Testes: unit da ação; E2E keyboard-only troca loja e valida chip.
+Auditoria antes da próxima microetapa.
+
+### LV-03.6 — Ação "sair" e Toaster global
+Objetivo único: item "Sair" no menu de ações do cabeçalho; primeiro limpa Context, depois navega para `/entrar`; Toaster anuncia "Você saiu do ambiente de demonstração"; foco vai ao conteúdo principal / título de `/entrar`; sem confirmação.
+Arquivos permitidos: componentes do cabeçalho, `src/routes/app.tsx`, integração do `Toaster` global (já existente).
+Critérios: mesma ação reutilizada no fallback de rota inexistente sob `/app/*`.
+Testes: E2E keyboard-only.
+Auditoria antes da próxima microetapa.
+
+### LV-03.7 — `notFoundComponent` sob `/app/*`
+Objetivo único: fallback dedicado em `src/routes/app.tsx` para URLs inexistentes sob `/app/*`, exibido dentro do shell somente quando há sessão mock ativa; mensagem "Esta área não está disponível nesta demonstração"; ações "Voltar ao início" (→ `/app/inicio`) e "Sair da demonstração" (→ limpa Context e vai para `/entrar`). O 404 global de `__root.tsx` permanece inalterado. Nenhuma rota placeholder é criada.
+Arquivos permitidos: `src/routes/app.tsx`.
+Testes: E2E cobre URL inexistente com e sem sessão.
+Auditoria antes da próxima microetapa.
+
+---
+
+## 5. LV-04 a LV-08 — Blocos operacionais visuais
+
+Cada bloco será desdobrado em microetapas pequenas no momento de sua abertura, cada uma com: objetivo único, arquivos permitidos, critérios de aceite, testes e auditoria antes da próxima etapa. Regras invioláveis da Seção 1 permanecem válidas em todos.
+
+### LV-04 — Catálogo visual
+Componentes compartilhados adicionais que os blocos operacionais consumirão (ex.: cabeçalhos de página, filtros padrão, estados vazios, badges de status específicos), sem criar rotas operacionais.
+
+### LV-05 — Recebimento visual
+Rotas: `/app/recebimento`, `/app/recebimento/$recebimentoId` (layout-pai com `<Outlet />` + `.index.tsx` de detalhe), `/app/recebimento/$recebimentoId/conferencia`, `/app/recebimento/$recebimentoId/divergencias`. Todas puramente visuais e mockadas.
+
+### LV-06 — Estoque e reposição visual
+Rotas: `/app/loja/estoque` (consulta visual mockada de `stock_balances`), `/app/reposicao`, `/app/reposicao/$reposicaoId` (layout-pai + `.index.tsx`), `/app/reposicao/$reposicaoId/execucao`. `replenishment_destinations` aparece apenas como leitura visual mockada; regras operacionais reais (GAP-06) ficam para a fase pós-visual.
+
+### LV-07 — Contagem e aprovações visuais
+Rotas: `/app/contagem`, `/app/contagem/$contagemId` (layout-pai + `.index.tsx`), `/app/supervisao/aprovacoes` (representa `approvals`, nunca `approval_limits`).
+
+### LV-08 — Gestão, rede e administração visual
+- Supervisão: `/app/supervisao`, `/app/supervisao/tarefas`, `/app/supervisao/equipe`.
+- Rede: `/app/rede`, `/app/rede/lojas`, `/app/rede/produtos`, `/app/rede/fornecedores`, `/app/rede/pessoas`.
+- Administração: `/app/admin` (hub filtrado por contexto autorizado — mockado), `/app/admin/permissoes`, `/app/admin/dispositivos`, `/app/admin/suporte` (fluxo JIT exclusivo e separado — `support_access_grants`), `/app/admin/integracoes`, `/app/admin/operacoes`.
+- `platform_admin` e "recebedor" não são introduzidos como papéis canônicos; representações visuais usam rótulos neutros ("equipe autorizada da plataforma").
+
+---
+
+## 6. Fase pós-visual (fora do escopo atual)
+
+Somente após aprovação integral dos protótipos visuais de LV-02 a LV-08:
+- Habilitar Lovable Cloud / Supabase.
+- Modelar tabelas conforme decisões LV-00A.2.*.
+- Implementar RLS, `has_role`, `role_permissions`, `membership_store_scopes`, `approval_limits`, `support_access_grants`, `device_authorizations`, `integration_inbox`, `integration_attempts`, `operation_requests`, etc.
+- Substituir mocks pelo Data API real, preservando URLs e superfícies visuais decididas.
+
+Nada disso é iniciado enquanto qualquer microetapa visual estiver pendente.
+
+---
+
+## 7. Resumo das correções aplicadas nesta consolidação
+
+- Rota de entrada padronizada em `/entrar` (removida qualquer menção a `/entrada`).
+- Layout `/app` fixado em `src/routes/app.tsx` (removido `_app.tsx` pathless).
+- Sessão mock unificada em `src/contexts/mock-session-context.tsx` com Provider em `src/routes/__root.tsx`.
+- Proibição explícita de Zustand, `localStorage`, `sessionStorage`, cookies e persistência.
+- Exatamente quatro cenários demonstrativos e exatamente três lojas aprovadas.
+- Proibição de placeholders, links quebrados, itens desabilitados e "Em breve".
+- `presentation_uses` reclassificado como snapshot documental (sem rota/tela/entidade).
+- `/app/supervisao/aprovacoes` amarrada a `approvals`; `approval_limits` permanece pendente.
+- `platform_admin` e "recebedor" removidos como papéis canônicos.
+- Suporte JIT preservado como fluxo exclusivo em `/app/admin/suporte`.
+- Menu do bloco 1 limitado a `/app/inicio`, `/app/perfil`, `/app/loja`.
+- `/app/loja/estoque` movido para LV-06.
+- Vitrine `/` preservada integralmente.
+
+---
+
+## 8. Próxima etapa
+
+**LV-02.1 — Fluxo vertical mínimo entrada → início** (Seção 3). Aguardando autorização explícita para iniciar. Nenhuma implementação foi feita nesta consolidação.
